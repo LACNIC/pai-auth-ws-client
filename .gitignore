@@ -1,0 +1,87 @@
+# Compiled class file
+*.class
+**/bin/**
+**/classes/**
+
+# Archivos del sistema operativo
+#############################
+.DS_Store
+Thumbs.db
+
+# Archivos de log
+#############################
+*.log
+*.log.*
+
+# Archivos de compilación y configuración de Maven
+#############################
+target/
+!target/.gitkeep
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+*.log
+*.iml
+#*.project
+#*.classpath
+#*.settings/
+*.factorypath
+
+# Directorios de configuración de Eclipse
+#############################
+#.settings/
+#.classpath
+#.project
+
+# Archivos de IntelliJ IDEA
+#############################
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Configuración de VS Code
+#############################
+.vscode/
+
+# Configuración de NetBeans
+#############################
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Archivos de configuración de sistema y del usuario
+#############################
+*.swp
+*~
+.idea_modules/
+*.orig
+*.bak
+*.old
+
+# Archivos de configuración de contenedores Docker y Kubernetes
+#############################
+docker-compose.override.yml
+.env
+.env.*
+
+# Configuración de logs y archivos temporales de runtime
+#############################
+hs_err_pid*
+*.pid
+*.seed
+
+# Archivos específicos de versiones y del control de versiones de Git
+#############################
+*.patch
+*.rej
+*~
