@@ -19,9 +19,12 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("deprecation")
 public class PortalHttpClient {
+	private static final Logger logger = LoggerFactory.getLogger(PortalHttpClient.class);
 
 	public static HttpClient getNewHttpClient() {
 		try {
@@ -49,6 +52,7 @@ public class PortalHttpClient {
 				return httpClient;
 			}
 		} catch (Exception e) {
+			logger.error("An error occurred: {}", e.getMessage(), e);
 			return new DefaultHttpClient();
 		}
 	}
@@ -84,8 +88,8 @@ public class PortalHttpClient {
 				return httpClient;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return HttpClients.createDefault(); // Fallback to default HttpClient
+			logger.error("An error occurred: {}", e.getMessage(), e);
+			return HttpClients.createDefault();
 		}
 	}
 }
