@@ -46,7 +46,7 @@ public class PortalHttpClient {
 				HttpParams httpParams = httpClient.getParams();
 				httpParams.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout * 1000);
 				httpParams.setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout * 1000);
-				httpParams.setParameter(ClientPNames.CONN_MANAGER_TIMEOUT, timeout * 1000);
+				httpParams.setParameter(ClientPNames.CONN_MANAGER_TIMEOUT, (long) timeout * 1000);
 				return httpClient;
 			}
 		} catch (Exception e) {
