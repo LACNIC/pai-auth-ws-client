@@ -60,11 +60,12 @@ public class UtilsFiles {
 		try {
 			String uuid = UUID.randomUUID().toString();
 			File file = new File(System.getProperty("jboss.server.temp.dir").concat("/") + uuid + "." + extension);
-			file.createNewFile();
-
-			try (FileOutputStream fos = new FileOutputStream(file)) {
-				fos.write(bytes);
-				fos.flush();
+			boolean created = file.createNewFile();
+			if (created) {
+				try (FileOutputStream fos = new FileOutputStream(file)) {
+					fos.write(bytes);
+					fos.flush();
+				}
 			}
 
 			return file;
