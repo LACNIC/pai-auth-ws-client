@@ -18,27 +18,22 @@ public class LoginData implements Serializable {
 	}
 
 	public LoginData(String error) {
-		this.authenticated = false;
-		this.roles = new ArrayList<String>();
-		this.username = "";
-		this.error = error;
-
+		setAuthenticated(false);
+		setRoles(new ArrayList<String>());
+		setUsername("");
+		setError(error);
 	}
 
 	public LoginData(List<String> roles) {
-		this.authenticated = !roles.isEmpty();
-		this.roles = roles;
+		setAuthenticated(!roles.isEmpty());
+		setRoles(roles);
 	}
 
 	public LoginData(List<String> roles, String username) {
-		this.authenticated = !roles.isEmpty();
-		this.roles = roles;
-		this.username = username;
-		this.error = authenticated ? "" : "Error: verifique usuario y/o contraseña";
-	}
-
-	public boolean getAuthenticated() {
-		return authenticated;
+		setAuthenticated(!roles.isEmpty());
+		setRoles(roles);
+		setUsername(username);
+		setError(authenticated ? "" : "Error: verifique usuario y/o contraseña");
 	}
 
 	public boolean isAuthenticated() {
