@@ -29,29 +29,27 @@ public class UtilsFiles {
 	}
 
 	public static byte[] getBytesFromFile(File file) throws IOException {
-		InputStream is = new FileInputStream(file);
+		try (InputStream is = new FileInputStream(file)) {
 
-		long length = file.length();
+			long length = file.length();
+			if (length > Integer.MAX_VALUE) {
+				throw new IOException("File is too large to process");
+			}
 
-		if (length > Integer.MAX_VALUE) {
-			// File is too large
+			byte[] bytes = new byte[(int) length];
+
+			int offset = 0;
+			int numRead;
+			while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+				offset += numRead;
+			}
+
+			if (offset < bytes.length) {
+				throw new IOException("Could not completely read file " + file.getName());
+			}
+
+			return bytes;
 		}
-
-		byte[] bytes = new byte[(int) length];
-
-		int offset = 0;
-		int numRead = 0;
-		while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-			offset += numRead;
-		}
-
-		if (offset < bytes.length) {
-			throw new IOException("Could not completely read file " + file.getName());
-		}
-
-		is.close();
-
-		return bytes;
 	}
 
 	public static File obtenerFile(byte[] bytes, String extension) {
@@ -59,10 +57,12 @@ public class UtilsFiles {
 			String uuid = UUID.randomUUID().toString();
 			File file = new File(System.getProperty("jboss.server.temp.dir").concat("/") + uuid + "." + extension);
 			file.createNewFile();
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(bytes);
-			fos.flush();
-			fos.close();
+
+			try (FileOutputStream fos = new FileOutputStream(file)) {
+				fos.write(bytes);
+				fos.flush();
+			}
+
 			return file;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
