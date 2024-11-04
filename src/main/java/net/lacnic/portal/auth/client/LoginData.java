@@ -40,6 +40,10 @@ public class LoginData implements Serializable {
 		return authenticated;
 	}
 
+	public boolean getAuthenticated() {
+		return isAuthenticated();
+	}
+
 	public void setAuthenticated(boolean authenticated) {
 		this.authenticated = authenticated;
 	}
@@ -60,11 +64,6 @@ public class LoginData implements Serializable {
 		this.username = username;
 	}
 
-	@Override
-	public String toString() {
-		return "LDAPData [authenticated=" + authenticated + ", roles=" + roles + ", email=" + username + "]";
-	}
-
 	public String getError() {
 		return error;
 	}
@@ -73,4 +72,8 @@ public class LoginData implements Serializable {
 		this.error = error;
 	}
 
+	@Override
+	public String toString() {
+		return "LDAPData [authenticated=" + authenticated + ", roles=" + roles + ", email=" + username + "]";
+	}
 }
