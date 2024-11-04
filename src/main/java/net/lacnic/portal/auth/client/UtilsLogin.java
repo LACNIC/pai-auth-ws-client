@@ -5,7 +5,12 @@ import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UtilsLogin {
+
+	private static final Logger logger = LoggerFactory.getLogger(UtilsLogin.class);
 
 	public static LoginData login(String username, String password) {
 		try {
@@ -17,7 +22,7 @@ public class UtilsLogin {
 			LoginData infoLDAP = PortalWSClient.getLoginData(username, password);
 			return infoLDAP;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
 			return new LoginData("Error: verifique usuario y/o contraseña");
 		}
 	}
