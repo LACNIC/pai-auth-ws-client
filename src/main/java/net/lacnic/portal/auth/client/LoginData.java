@@ -19,7 +19,7 @@ public class LoginData implements Serializable {
 
 	public LoginData(String error) {
 		setAuthenticated(false);
-		setRoles(new ArrayList<String>());
+		setRoles(new ArrayList<>());
 		setUsername("");
 		setError(error);
 	}

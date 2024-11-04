@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +33,56 @@ public class LoginDataTest {
 	}
 
 	@Test
+	void testConstructorWithRoles_nonEmptyRoles() {
+		List<String> roles = Arrays.asList("ADMIN", "USER");
+
+		LoginData loginData = new LoginData(roles);
+
+		assertTrue(loginData.isAuthenticated(), "Authenticated should be true when roles are non-empty");
+		assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
+	}
+
+	@Test
+	void testConstructorWithRoles_emptyRoles() {
+		List<String> roles = Collections.emptyList();
+
+		LoginData loginData = new LoginData(roles);
+
+		assertFalse(loginData.isAuthenticated(), "Authenticated should be false when roles are empty");
+		assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
+	}
+
+	@Test
+	void testConstructorWithRolesAndUsername_nonEmptyRoles() {
+		List<String> roles = Arrays.asList("ADMIN", "USER");
+		String username = "testUser";
+
+		LoginData loginData = new LoginData(roles, username);
+
+		assertTrue(loginData.isAuthenticated(), "Authenticated should be true when roles are non-empty");
+		assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
+		assertEquals(username, loginData.getUsername(), "Username should match the input username");
+		assertEquals("", loginData.getError(), "Error should be empty when authenticated is true");
+	}
+
+	@Test
+	void testConstructorWithRolesAndUsername_emptyRoles() {
+		List<String> roles = Collections.emptyList();
+		String username = "testUser";
+
+		LoginData loginData = new LoginData(roles, username);
+
+		assertFalse(loginData.isAuthenticated(), "Authenticated should be false when roles are empty");
+		assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
+		assertEquals(username, loginData.getUsername(), "Username should match the input username");
+		assertEquals("Error: verifique usuario y/o contraseña", loginData.getError(), "Error should be set when no roles are provided");
+	}
+
+	@Test
 	void testErrorConstructor() {
 		String error = "Invalid login";
 		loginData = new LoginData(error);
+		assertFalse(loginData.getAuthenticated(), "Authenticated should be false when error is set");
 		assertFalse(loginData.isAuthenticated(), "Authenticated should be false when error is set");
 		assertEquals("", loginData.getUsername(), "Username should be empty by default with error constructor");
 		assertNotNull(loginData.getRoles(), "Roles should be initialized");
@@ -72,5 +122,17 @@ public class LoginDataTest {
 		String error = "Login failed";
 		loginData.setError(error);
 		assertEquals(error, loginData.getError(), "Error message should match the set value");
+	}
+
+	@Test
+	void testToString() {
+		List<String> roles = new ArrayList<>();
+		roles.add("USER");
+		loginData.setRoles(roles);
+		loginData.setAuthenticated(true);
+		loginData.setUsername("Username");
+
+		assertTrue(loginData.toString().contains("USER"));
+		assertTrue(loginData.toString().contains("Username"));
 	}
 }
