@@ -10,12 +10,15 @@ import java.util.Properties;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PortalWSClient {
+	private static final Logger logger = LoggerFactory.getLogger(PortalWSClient.class);
 
 	public static final String CONF_DIR = System.getProperty("jboss.server.config.dir");
 
@@ -36,7 +39,8 @@ public class PortalWSClient {
 			print(tokenData.toString());
 			return tokenData;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 		}
 		return new TokenData("Error en el cliente Java");
 	}
@@ -59,7 +63,8 @@ public class PortalWSClient {
 
 			return dataLDAP;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 		}
 		return new LoginData("Error: verifique usuario y/o contraseña");
 	}
@@ -89,7 +94,8 @@ public class PortalWSClient {
 
 			return result.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 			return null;
 		}
 	}
@@ -115,7 +121,8 @@ public class PortalWSClient {
 
 			return result.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 			return null;
 		}
 	}
@@ -158,7 +165,8 @@ public class PortalWSClient {
 
 			return dataLDAP;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 		}
 		return new LoginData("Error ws nuevo");
 	}
