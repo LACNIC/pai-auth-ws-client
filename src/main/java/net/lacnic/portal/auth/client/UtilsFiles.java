@@ -8,7 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UtilsFiles {
+	private static final Logger logger = LoggerFactory.getLogger(UtilsFiles.class);
 
 	public static byte[] getBytesFromFile(String fileString) throws IOException {
 		return getBytesFromFile(new File(fileString));
@@ -23,7 +27,7 @@ public class UtilsFiles {
 		try {
 			return getBytesFromFile(calcularRutaImgQR(secretKey));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
 			return null;
 		}
 	}
@@ -65,9 +69,9 @@ public class UtilsFiles {
 
 			return file;
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
 		}
 		return null;
 	}

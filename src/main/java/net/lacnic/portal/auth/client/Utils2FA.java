@@ -8,6 +8,8 @@ import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -18,6 +20,7 @@ import com.google.zxing.common.BitMatrix;
 import de.taimos.totp.TOTP;
 
 public class Utils2FA {
+	private static final Logger logger = LoggerFactory.getLogger(Utils2FA.class);
 
 	private static final String UTF_8 = "UTF-8";
 
@@ -30,7 +33,7 @@ public class Utils2FA {
 			Utils2FA.createQRCode(barCodeUrl, calcularRutaImgQR, 300, 300);
 			return secretKey;
 		} catch (IOException | WriterException e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
 			return null;
 		}
 

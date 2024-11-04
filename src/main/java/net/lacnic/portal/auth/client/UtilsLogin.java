@@ -45,7 +45,8 @@ public class UtilsLogin {
 			LoginData infoLDAP = PortalWSClient.getLoginDataTfa(username, password, totp);
 			return infoLDAP;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("An error occurred: {}", e.getMessage(), e);
+
 			return new LoginData("Error: verifique usuario y/o contraseña");
 		}
 	}

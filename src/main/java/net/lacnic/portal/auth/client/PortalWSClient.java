@@ -143,7 +143,8 @@ public class PortalWSClient {
 		try (InputStream input = new FileInputStream(CONF_DIR.concat("/pai.properties"))) {
 			prop.load(input);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			logger.error("An error occurred: {}", ex.getMessage(), ex);
+
 		}
 		return prop;
 	}
