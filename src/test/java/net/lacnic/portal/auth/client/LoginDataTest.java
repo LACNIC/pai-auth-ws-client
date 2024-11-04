@@ -3,6 +3,7 @@ package net.lacnic.portal.auth.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -20,55 +21,56 @@ public class LoginDataTest {
 	}
 
 	@Test
-	void defaultConstructor_initializesFieldsCorrectly() {
-		assertFalse(loginData.isAuthenticated());
-		assertEquals("", loginData.getUsername());
-		assertNotNull(loginData.getRoles());
-		assertTrue(loginData.getRoles().isEmpty());
-		assertEquals("", loginData.getError());
+	void testDefaultConstructor() {
+		assertFalse(loginData.isAuthenticated(), "Authenticated should be false by default");
+		assertEquals("", loginData.getUsername(), "Username should be an empty string by default");
+		assertNotNull(loginData.getRoles(), "Roles should be initialized");
+		assertTrue(loginData.getRoles().isEmpty(), "Roles should be empty by default");
+		assertEquals("", loginData.getError(), "Error should be an empty string by default");
 	}
 
 	@Test
-	void constructorWithError_initializesFieldsCorrectly() {
-		String errorMessage = "Authentication failed";
-		loginData = new LoginData(errorMessage);
-
-		assertFalse(loginData.isAuthenticated());
-		assertEquals("", loginData.getUsername());
-		assertNotNull(loginData.getRoles());
-		assertTrue(loginData.getRoles().isEmpty());
-		assertEquals(errorMessage, loginData.getError());
+	void testErrorConstructor() {
+		String error = "Invalid login";
+		loginData = new LoginData(error);
+		assertFalse(loginData.isAuthenticated(), "Authenticated should be false when error is set");
+		assertEquals("", loginData.getUsername(), "Username should be empty by default with error constructor");
+		assertNotNull(loginData.getRoles(), "Roles should be initialized");
+		assertTrue(loginData.getRoles().isEmpty(), "Roles should be empty by default with error constructor");
+		assertEquals(error, loginData.getError(), "Error should be set to the provided error message");
 	}
 
 	@Test
-	void setAuthenticated_setsAuthenticatedFieldCorrectly() {
+	void testSetAuthenticated() {
 		loginData.setAuthenticated(true);
-		assertTrue(loginData.isAuthenticated());
-
-		loginData.setAuthenticated(false);
-		assertFalse(loginData.isAuthenticated());
+		assertTrue(loginData.isAuthenticated(), "Authenticated should be true after setting it");
 	}
 
 	@Test
-	void setUsername_setsUsernameFieldCorrectly() {
-		String username = "testUser";
+	void testSetUsername() {
+		String username = "user1";
 		loginData.setUsername(username);
-		assertEquals(username, loginData.getUsername());
+		assertEquals(username, loginData.getUsername(), "Username should be set correctly");
 	}
 
 	@Test
-	void setRoles_setsRolesFieldCorrectly() {
-		loginData.setRoles(Arrays.asList("ROLE_USER", "ROLE_ADMIN"));
-		assertNotNull(loginData.getRoles());
-		assertEquals(2, loginData.getRoles().size());
-		assertTrue(loginData.getRoles().contains("ROLE_USER"));
-		assertTrue(loginData.getRoles().contains("ROLE_ADMIN"));
+	void testSetRoles() {
+		loginData.setRoles(Arrays.asList("admin", "user"));
+		assertEquals(2, loginData.getRoles().size(), "Roles list size should match the assigned list");
+		assertTrue(loginData.getRoles().contains("admin"), "Roles should contain 'admin'");
+		assertTrue(loginData.getRoles().contains("user"), "Roles should contain 'user'");
 	}
 
 	@Test
-	void setError_setsErrorFieldCorrectly() {
-		String error = "Some error";
+	void testSetRolesWithNull() {
+		loginData.setRoles(null);
+		assertNull(loginData.getRoles(), "Roles should be null if set to null explicitly");
+	}
+
+	@Test
+	void testSetError() {
+		String error = "Login failed";
 		loginData.setError(error);
-		assertEquals(error, loginData.getError());
+		assertEquals(error, loginData.getError(), "Error message should match the set value");
 	}
 }
