@@ -10,7 +10,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TokenDataTest {
+class TokenDataTest {
 	private TokenData tokenData;
 
 	@BeforeEach
