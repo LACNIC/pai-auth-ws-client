@@ -19,8 +19,7 @@ public class UtilsLogin {
 			byte[] bytes = md.digest();
 			String hash = new String(Base64.getEncoder().encode(bytes));
 			password = "{SHA256}" + hash;
-			LoginData infoLDAP = PortalWSClient.getLoginData(username, password);
-			return infoLDAP;
+			return PortalWSClient.getLoginData(username, password);
 		} catch (Exception e) {
 			logger.error("An error occurred: {}", e.getMessage(), e);
 			return new LoginData("Error: verifique usuario y/o contraseña");

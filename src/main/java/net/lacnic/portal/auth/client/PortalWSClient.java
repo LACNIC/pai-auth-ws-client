@@ -123,7 +123,7 @@ public class PortalWSClient {
 		}
 	}
 
-	private static String getAuthToken() throws Exception {
+	private static String getAuthToken() {
 		Properties props = getPaiProperties();
 		return props.getProperty(PORTAL_APIKEY);
 	}

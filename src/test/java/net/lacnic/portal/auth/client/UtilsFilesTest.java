@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class UtilsFilesTest {
+class UtilsFilesTest {
 
 	private static final String TEMP_DIR_KEY = "jboss.server.temp.dir";
 	private Path tempDirectory;

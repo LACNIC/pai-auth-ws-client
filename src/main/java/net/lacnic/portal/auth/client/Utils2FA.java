@@ -19,6 +19,8 @@ import de.taimos.totp.TOTP;
 
 public class Utils2FA {
 
+	private static final String UTF_8 = "UTF-8";
+
 	public static String obtenerSecretKey(String user) {
 		try {
 			String secretKey = Utils2FA.generateSecretKey();
@@ -51,7 +53,7 @@ public class Utils2FA {
 
 	public static String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
 		try {
-			return "otpauth://totp/" + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20") + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20") + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
+			return "otpauth://totp/" + URLEncoder.encode(issuer + ":" + account, UTF_8).replace("+", "%20") + "?secret=" + URLEncoder.encode(secretKey, UTF_8).replace("+", "%20") + "&issuer=" + URLEncoder.encode(issuer, UTF_8).replace("+", "%20");
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException(e);
 		}

@@ -9,7 +9,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.junit.jupiter.api.Test;
 
-public class PortalHttpClientTest {
+class PortalHttpClientTest {
 
 	@Test
 	void testGetNewHttpClient_returnsConfiguredHttpClient() {

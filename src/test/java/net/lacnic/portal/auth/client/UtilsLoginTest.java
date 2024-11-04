@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-public class UtilsLoginTest {
+class UtilsLoginTest {
 
 	private HttpServletRequest mockRequest;
 

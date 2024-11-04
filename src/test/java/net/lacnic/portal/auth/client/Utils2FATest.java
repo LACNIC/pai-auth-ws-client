@@ -23,7 +23,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 
 import de.taimos.totp.TOTP;
 
-public class Utils2FATest {
+class Utils2FATest {
 
 	@BeforeEach
 	void setUp() {
