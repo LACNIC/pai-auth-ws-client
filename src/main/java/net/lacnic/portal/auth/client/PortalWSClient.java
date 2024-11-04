@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PortalWSClient {
 
-	public static final String confDir = System.getProperty("jboss.server.config.dir");
+	public static final String CONF_DIR = System.getProperty("jboss.server.config.dir");
 
 	private static final String URL_PORTAL_WS = "URL_PORTAL_WS";
 	private static final String PORTAL_AUTHORIZATION = "Authorization";
@@ -25,10 +25,6 @@ public class PortalWSClient {
 	private static final String PORTAL_USUARIO = "PORTAL_USUARIO";
 	private static final String PORTAL_PASS = "PORTAL_PASS";
 	private static final String PORTAL_TOTP = "PORTAL_TOTP";
-
-	public PortalWSClient() {
-
-	}
 
 	public static TokenData getTokenData(String token) {
 		try {
@@ -46,6 +42,7 @@ public class PortalWSClient {
 	}
 
 	public static void print(String printeable) {
+		// utils print
 		System.out.println("*******************");
 		System.out.println(printeable);
 		System.out.println("*******************");
@@ -136,7 +133,7 @@ public class PortalWSClient {
 
 	public static Properties getPaiProperties() {
 		Properties prop = new Properties();
-		try (InputStream input = new FileInputStream(confDir.concat("/pai.properties"))) {
+		try (InputStream input = new FileInputStream(CONF_DIR.concat("/pai.properties"))) {
 			prop.load(input);
 		} catch (IOException ex) {
 			ex.printStackTrace();
