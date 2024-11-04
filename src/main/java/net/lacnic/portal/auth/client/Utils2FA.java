@@ -24,7 +24,8 @@ public class Utils2FA {
 			String secretKey = Utils2FA.generateSecretKey();
 			String companyName = "LACNIC (PAI)";
 			String barCodeUrl = Utils2FA.getGoogleAuthenticatorBarCode(secretKey, user, companyName);
-			Utils2FA.createQRCode(barCodeUrl, UtilsFiles.calcularRutaImgQR(secretKey), 300, 300);
+			String calcularRutaImgQR = UtilsFiles.calcularRutaImgQR(secretKey);
+			Utils2FA.createQRCode(barCodeUrl, calcularRutaImgQR, 300, 300);
 			return secretKey;
 		} catch (IOException | WriterException e) {
 			e.printStackTrace();

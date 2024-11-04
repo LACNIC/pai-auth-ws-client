@@ -16,7 +16,7 @@ public class UtilsFiles {
 	}
 
 	public static String calcularRutaImgQR(String secretKey) {
-		return System.getProperty("jboss.server.temp.dir").concat("/") + secretKey + ".jpg";
+		return System.getProperty("jboss.server.temp.dir", "/tmp/").concat("/") + secretKey + ".jpg";
 	}
 
 	public static byte[] calcularBytesImgQR(String secretKey) {
