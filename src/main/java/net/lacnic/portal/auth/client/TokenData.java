@@ -37,6 +37,10 @@ public class TokenData implements Serializable {
 		return authenticated;
 	}
 
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
+
 	public void setAuthenticated(boolean authenticated) {
 		this.authenticated = authenticated;
 	}

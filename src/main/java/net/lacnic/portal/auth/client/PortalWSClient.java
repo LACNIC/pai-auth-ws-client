@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PortalWSClient {
 
-	public static String confDir = System.getProperty("jboss.server.config.dir");
+	public static final String confDir = System.getProperty("jboss.server.config.dir");
 
 	private static final String URL_PORTAL_WS = "URL_PORTAL_WS";
 	private static final String PORTAL_AUTHORIZATION = "Authorization";
@@ -37,14 +37,18 @@ public class PortalWSClient {
 
 			TokenData tokenData = objectMapper.readValue(jsonData, new TypeReference<TokenData>() {
 			});
-			System.out.println("*******************");
-			System.out.println(tokenData.toString());
-			System.out.println("*******************");
+			print(tokenData.toString());
 			return tokenData;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return new TokenData("Error en el cliente Java");
+	}
+
+	public static void print(String printeable) {
+		System.out.println("*******************");
+		System.out.println(printeable);
+		System.out.println("*******************");
 	}
 
 	public static LoginData getLoginData(String username, String password) {
@@ -54,7 +58,8 @@ public class PortalWSClient {
 
 			LoginData dataLDAP = objectMapper.readValue(jsonData, new TypeReference<LoginData>() {
 			});
-			System.out.println("*******************" + dataLDAP.toString());
+			print(dataLDAP.toString());
+
 			return dataLDAP;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -62,7 +67,7 @@ public class PortalWSClient {
 		return new LoginData("Error: verifique usuario y/o contraseña");
 	}
 
-	private static String readUrl(String urlString, String username, String password) {
+	public static String readUrl(String urlString, String username, String password) {
 		return readUrl(urlString, username, password, "");
 	}
 
@@ -152,7 +157,8 @@ public class PortalWSClient {
 
 			LoginData dataLDAP = objectMapper.readValue(jsonData, new TypeReference<LoginData>() {
 			});
-			System.out.println("*******************" + dataLDAP.toString());
+			print(dataLDAP.toString());
+
 			return dataLDAP;
 		} catch (IOException e) {
 			e.printStackTrace();
