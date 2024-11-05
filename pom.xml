@@ -73,14 +73,13 @@
 			<version>1.15</version>
 		</dependency>
 
-		<!-- JUnit 5 (Jupiter) dependency for testing -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Mockito dependency for mocking objects -->
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
@@ -88,7 +87,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Mockito JUnit Jupiter extension for integrating with JUnit 5 -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
@@ -99,7 +97,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.36</version> <!-- Use latest version if available -->
+			<version>1.7.36</version> 
 		</dependency>
 	</dependencies>
 
