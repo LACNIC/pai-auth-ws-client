@@ -22,3 +22,4 @@ jobs:
           base-ref: 'main'
           head-ref: '${{ github.ref_name }}'  # Usar la rama actual en el evento push
           comment-summary-in-pr: always
+          fail-on-severity: low
