@@ -1,0 +1,26 @@
+<project name="mvn-caller-pai-auth-ws-client" default="build" basedir=".">
+
+	<property name="maven.executable" value="${maven.home}/bin/mvn" />
+	<property name="jarName" value="pai-auth-ws-client-1.2.0.jar" />
+	
+	<target name="build" description="build" depends="copy"> </target>
+
+	<target name="copy" description="copy to dist" depends="call-maven">
+		<copy todir="${dist}" file="target/${jarName}" />
+		<copy todir="${WILDFLY10.1}${STANDALONE-PORTAL}" file="target/${jarName}" />
+		<copy todir="${WILDFLY10.1}${STANDALONE-RECOVERY}" file="target/${jarName}" />
+		<copy todir="${WILDFLY10.1}${STANDALONE-MILACNIC}" file="target/${jarName}" />
+		<copy todir="${WILDFLY20}${STANDALONE-EVRA}" file="target/${jarName}" />
+		<copy todir="${WILDFLY34}${STANDALONE-POLITICAS}" file="target/${jarName}" />
+
+	</target>
+	
+	<target name="call-maven">
+		<exec executable="${maven.executable}">
+			<arg value="clean" />
+			<arg value="compile" />
+			<arg value="package" />
+			<arg value="-DskipTests" />
+		</exec>
+	</target>
+</project>
