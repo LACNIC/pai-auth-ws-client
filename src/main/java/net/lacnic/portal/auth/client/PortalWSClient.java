@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,8 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PortalWSClient {
 	private static final Logger logger = LoggerFactory.getLogger(PortalWSClient.class);
-
 	public static final String CONF_DIR = System.getProperty("jboss.server.config.dir");
+
+	private static final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
 	private static final String URL_PORTAL_WS = "URL_PORTAL_WS";
 	private static final String PORTAL_AUTHORIZATION = "Authorization";
@@ -28,19 +31,28 @@ public class PortalWSClient {
 	private static final String PORTAL_USUARIO = "PORTAL_USUARIO";
 	private static final String PORTAL_PASS = "PORTAL_PASS";
 	private static final String PORTAL_TOTP = "PORTAL_TOTP";
+	private static final long CACHE_DURATION_MS = TimeUnit.MINUTES.toMillis(5); // 5 minutos
 
 	public static TokenData getTokenData(String token) {
 		try {
+			CacheEntry cached = cache.get(token);
+			if (cached != null) {
+				if (!cached.isExpired()) {
+					return cached.tokenData;
+				} else {
+					cache.remove(token);
+				}
+			}
 			String jsonData = readUrlToken((getURLWS() + "/authorization"), token);
 			ObjectMapper objectMapper = newMapper();
-
 			TokenData tokenData = objectMapper.readValue(jsonData, new TypeReference<TokenData>() {
 			});
+
 			print(tokenData.toString());
+			cache.put(token, new CacheEntry(tokenData));
 			return tokenData;
 		} catch (IOException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
-
+			e.printStackTrace();
 		}
 		return new TokenData("Error en el cliente Java");
 	}
@@ -83,7 +95,7 @@ public class PortalWSClient {
 			request.setHeader(PORTAL_TOTP, totp);
 
 			HttpResponse response = client.execute(request);
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -110,7 +122,7 @@ public class PortalWSClient {
 			request.setHeader(PORTAL_AUTHORIZATION, token);
 
 			HttpResponse response = client.execute(request);
-			StringBuffer result = new StringBuffer();
+			StringBuilder result = new StringBuilder();
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -170,5 +182,19 @@ public class PortalWSClient {
 
 		}
 		return new LoginData("Error ws nuevo");
+	}
+
+	private static class CacheEntry {
+		private final TokenData tokenData;
+		private final long timestamp;
+
+		public CacheEntry(TokenData tokenData) {
+			this.tokenData = tokenData;
+			this.timestamp = System.currentTimeMillis();
+		}
+
+		public boolean isExpired() {
+			return (System.currentTimeMillis() - timestamp) > CACHE_DURATION_MS;
+		}
 	}
 }

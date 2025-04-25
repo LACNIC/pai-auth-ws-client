@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.LACNIC</groupId>
 	<artifactId>pai-auth-ws-client</artifactId>
-	<version>1.0.0</version>
+	<version>1.2.0</version>
 	<name>PAI Authentication Client</name>
 	<description>Client for handling authentication requests and managing access
 		to the PAI services.</description>
@@ -15,7 +15,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
-		<mockito.version>4.0.0</mockito.version>
+		<mockito.version>4.11.0</mockito.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>17</java.version>
 		<sonar.organization>lacnic</sonar.organization>
@@ -125,13 +125,11 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.7</version>
 				<executions>
-					<!-- Attach Jacoco agent during test phase -->
 					<execution>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
-					<!-- Generate Jacoco report after tests -->
 					<execution>
 						<id>report</id>
 						<phase>verify</phase>

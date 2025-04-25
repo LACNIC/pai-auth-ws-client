@@ -2,7 +2,6 @@ package net.lacnic.portal.auth.client;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,8 +68,6 @@ public class UtilsFiles {
 			}
 
 			return file;
-		} catch (FileNotFoundException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
 		} catch (Exception e) {
 			logger.error("An error occurred: {}", e.getMessage(), e);
 		}
