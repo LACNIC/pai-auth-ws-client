@@ -31,11 +31,11 @@ public class PortalWSClient {
 	private static final String PORTAL_USUARIO = "PORTAL_USUARIO";
 	private static final String PORTAL_PASS = "PORTAL_PASS";
 	private static final String PORTAL_TOTP = "PORTAL_TOTP";
-	private static final long CACHE_DURATION_MS = TimeUnit.MINUTES.toMillis(5); // 5 minutos
+	private static final long CACHE_DURATION_MS = TimeUnit.MINUTES.toMillis(2); // 2 minutos
 
 	public static TokenData getTokenData(String token) {
+		CacheEntry cached = cache.get(token);
 		try {
-			CacheEntry cached = cache.get(token);
 			if (cached != null) {
 				if (!cached.isExpired()) {
 					return cached.tokenData;
@@ -53,15 +53,38 @@ public class PortalWSClient {
 			return tokenData;
 		} catch (IOException e) {
 			e.printStackTrace();
+			if (cached != null) {
+				cached.extend();
+				cache.put(token, cached); // Reponemos el cache extendido
+				System.err.println("Error al obtener token. Usando cache extendido temporalmente.");
+				return cached.tokenData;
+			}
 		}
 		return new TokenData("Error en el cliente Java");
 	}
 
 	public static void print(String printeable) {
-		// utils print
 		System.out.println("*******************");
 		System.out.println(printeable);
 		System.out.println("*******************");
+	}
+
+	private static class CacheEntry {
+		private final TokenData tokenData;
+		private long timestamp;
+
+		public CacheEntry(TokenData tokenData) {
+			this.tokenData = tokenData;
+			this.timestamp = System.currentTimeMillis();
+		}
+
+		public boolean isExpired() {
+			return (System.currentTimeMillis() - timestamp) > CACHE_DURATION_MS;
+		}
+
+		public void extend() {
+			this.timestamp = System.currentTimeMillis();
+		}
 	}
 
 	public static LoginData getLoginData(String username, String password) {
@@ -184,17 +207,4 @@ public class PortalWSClient {
 		return new LoginData("Error ws nuevo");
 	}
 
-	private static class CacheEntry {
-		private final TokenData tokenData;
-		private final long timestamp;
-
-		public CacheEntry(TokenData tokenData) {
-			this.tokenData = tokenData;
-			this.timestamp = System.currentTimeMillis();
-		}
-
-		public boolean isExpired() {
-			return (System.currentTimeMillis() - timestamp) > CACHE_DURATION_MS;
-		}
-	}
 }
