@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.LACNIC</groupId>
 	<artifactId>pai-auth-ws-client</artifactId>
-	<version>1.2.0</version>
+	<version>1.3.0</version>
 	<name>PAI Authentication Client</name>
 	<description>Client for handling authentication requests and managing access
 		to the PAI services.</description>
