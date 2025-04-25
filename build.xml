@@ -7,10 +7,10 @@
 
 	<target name="copy" description="copy to dist" depends="call-maven">
 		<copy todir="${dist}" file="target/${jarName}" />
-		<copy todir="${WILDFLY10.1}${STANDALONE-PORTAL}" file="target/${jarName}" />
-		<copy todir="${WILDFLY10.1}${STANDALONE-RECOVERY}" file="target/${jarName}" />
-		<copy todir="${WILDFLY10.1}${STANDALONE-MILACNIC}" file="target/${jarName}" />
-		<copy todir="${WILDFLY20}${STANDALONE-EVRA}" file="target/${jarName}" />
+<!--		<copy todir="${WILDFLY10.1}${STANDALONE-PORTAL}" file="target/${jarName}" />-->
+<!--		<copy todir="${WILDFLY10.1}${STANDALONE-RECOVERY}" file="target/${jarName}" />-->
+<!--		<copy todir="${WILDFLY10.1}${STANDALONE-MILACNIC}" file="target/${jarName}" />-->
+<!--		<copy todir="${WILDFLY20}${STANDALONE-EVRA}" file="target/${jarName}" />-->
 		<copy todir="${WILDFLY34}${STANDALONE-POLITICAS}" file="target/${jarName}" />
 
 	</target>
