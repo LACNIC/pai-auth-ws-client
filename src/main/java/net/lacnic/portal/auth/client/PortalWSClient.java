@@ -9,9 +9,9 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,15 +109,14 @@ public class PortalWSClient {
 	}
 
 	private static String readUrl(String urlString, String username, String password, String totp) {
-		try {
-			HttpClient client = PortalHttpClient.getNewHttpClient();
+		try (CloseableHttpClient client = PortalHttpClient.createInsecureClient()) {
 			HttpGet request = new HttpGet(urlString);
 			request.setHeader(PORTAL_APIKEY, getAuthToken());
 			request.setHeader(PORTAL_USUARIO, username);
 			request.setHeader(PORTAL_PASS, password);
 			request.setHeader(PORTAL_TOTP, totp);
 
-			HttpResponse response = client.execute(request);
+			CloseableHttpResponse response = client.execute(request);
 			StringBuilder result = new StringBuilder();
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -136,15 +135,14 @@ public class PortalWSClient {
 	}
 
 	private static String readUrlToken(String urlString, String token) {
-		try {
+		try (CloseableHttpClient client = PortalHttpClient.createInsecureClient()) {
 			if (!token.startsWith("Bearer")) {
 				token = "Bearer " + token;
 			}
-			HttpClient client = PortalHttpClient.getNewHttpClient();
 			HttpGet request = new HttpGet(urlString);
 			request.setHeader(PORTAL_AUTHORIZATION, token);
 
-			HttpResponse response = client.execute(request);
+			CloseableHttpResponse response = client.execute(request);
 			StringBuilder result = new StringBuilder();
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));

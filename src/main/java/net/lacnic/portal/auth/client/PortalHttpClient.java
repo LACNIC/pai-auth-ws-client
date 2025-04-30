@@ -1,57 +1,24 @@
 package net.lacnic.portal.auth.client;
 
-import java.security.KeyStore;
+import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 
-@SuppressWarnings("deprecation")
 public class PortalHttpClient {
-	private static final Logger logger = LoggerFactory.getLogger(PortalHttpClient.class);
 
-	public static HttpClient getNewHttpClient() {
-		try {
-			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			trustStore.load(null, null);
+	public static CloseableHttpClient createInsecureClient() throws Exception {
+		// Confía en todos los certificados
+		SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
 
-			MySSLSocketFactory sf = new MySSLSocketFactory(trustStore);
-			sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		// Crea el socket factory ignorando validación del hostname
+		SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2", "TLSv1.3" }, null, NoopHostnameVerifier.INSTANCE);
 
-			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-			registry.register(new Scheme("https", sf, 443));
-
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-			try (DefaultHttpClient httpClient = new DefaultHttpClient(ccm, params)) {
-				int timeout = 40; // seconds
-				HttpParams httpParams = httpClient.getParams();
-				httpParams.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout * 1000);
-				httpParams.setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout * 1000);
-				httpParams.setParameter(ClientPNames.CONN_MANAGER_TIMEOUT, (long) timeout * 1000);
-				return httpClient;
-			}
-		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
-			return new DefaultHttpClient();
-		}
+		return HttpClients.custom().setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setSSLSocketFactory(sslSocketFactory).build()).build();
 	}
 }

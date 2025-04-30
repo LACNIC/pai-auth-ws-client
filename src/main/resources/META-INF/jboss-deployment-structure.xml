@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jboss-deployment-structure>
+	<ear-subdeployments-isolated>false</ear-subdeployments-isolated>
+	<deployment>
+		<dependencies>
+			<module name="org.apache.httpcomponents5" />
+<!-- 			<module name="org.slf4j" /> -->
+			<!-- <module name="org.jboss.ejb-client" /> -->
+			<!-- <module name="org.apache.velocity" /> -->
+			<!-- <module name="org.joda.time" /> -->
+			<!-- <module name="org.apache.commons.validator" /> -->
+			<!-- <module name="org.apache.poi" /> -->
+			<!-- <module name="org.apache.poi-ooxml" /> -->
+			<!-- <module name="org.bouncycastle" /> -->
+			<!-- <module name="com.itextpdf" /> -->
+			<!-- <module name="com.javadocx" /> -->
+
+			<module name="jakarta.enterprise.api" export="true" />
+			<module name="jakarta.inject.api" export="true" />
+			<module name="jakarta.ejb.api" export="true" />
+			<module name="jakarta.transaction.api" export="true" />
+		</dependencies>
+	</deployment>
+
+</jboss-deployment-structure>
