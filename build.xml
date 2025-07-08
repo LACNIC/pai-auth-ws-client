@@ -12,6 +12,7 @@
 <!--		<copy todir="${WILDFLY10.1}${STANDALONE-MILACNIC}" file="target/${jarName}" />-->
 <!--		<copy todir="${WILDFLY20}${STANDALONE-EVRA}" file="target/${jarName}" />-->
 		<copy todir="${WILDFLY34}${STANDALONE-POLITICAS}" file="target/${jarName}" />
+		<copy todir="${WILDFLY34}${STANDALONE-VIAJES}" file="target/${jarName}" />
 
 	</target>
 	
