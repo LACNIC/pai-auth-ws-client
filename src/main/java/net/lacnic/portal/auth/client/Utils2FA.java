@@ -1,10 +1,13 @@
 package net.lacnic.portal.auth.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
 
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Hex;
@@ -33,7 +36,7 @@ public class Utils2FA {
 			Utils2FA.createQRCode(barCodeUrl, calcularRutaImgQR, 300, 300);
 			return secretKey;
 		} catch (IOException | WriterException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 			return null;
 		}
 
@@ -64,8 +67,8 @@ public class Utils2FA {
 
 	public static void createQRCode(String barCodeData, String filePath, int height, int width) throws IOException, WriterException {
 		BitMatrix matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height);
-		File out = new File(filePath);
-		MatrixToImageWriter.writeToFile(matrix, "png", out);
+		Path path = Paths.get(filePath);
+		MatrixToImageWriter.writeToPath(matrix, "png", path);
 	}
 
 }

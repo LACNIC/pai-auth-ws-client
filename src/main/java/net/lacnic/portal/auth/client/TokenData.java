@@ -19,7 +19,7 @@ public class TokenData implements Serializable {
 
 	public TokenData(String error) {
 		this.authenticated = false;
-		this.roles = new ArrayList<String>();
+		this.roles = new ArrayList<>();
 		this.token = "";
 		this.ipAllowed = "";
 		this.error = error;

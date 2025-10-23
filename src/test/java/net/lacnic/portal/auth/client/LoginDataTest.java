@@ -1,5 +1,6 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -73,9 +74,9 @@ class LoginDataTest {
 		LoginData loginData = new LoginData(roles, username);
 
 		assertFalse(loginData.isAuthenticated(), "Authenticated should be false when roles are empty");
-		assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
-		assertEquals(username, loginData.getUsername(), "Username should match the input username");
-		assertEquals("Error: verifique usuario y/o contraseña", loginData.getError(), "Error should be set when no roles are provided");
+	assertEquals(roles, loginData.getRoles(), "Roles should match the input list");
+	assertEquals(username, loginData.getUsername(), "Username should match the input username");
+	assertEquals(ERROR_INVALID_CREDENTIALS, loginData.getError(), "Error should be set when no roles are provided");
 	}
 
 	@Test

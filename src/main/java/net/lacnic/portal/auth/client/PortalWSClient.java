@@ -1,5 +1,7 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings("deprecation")
 public class PortalWSClient {
 	private static final Logger logger = LoggerFactory.getLogger(PortalWSClient.class);
 	public static final String CONF_DIR = System.getProperty("jboss.server.config.dir");
@@ -98,10 +101,10 @@ public class PortalWSClient {
 
 			return dataLDAP;
 		} catch (IOException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
 		}
-		return new LoginData("Error: verifique usuario y/o contraseña");
+		return new LoginData(LogMessages.ERROR_INVALID_CREDENTIALS);
 	}
 
 	public static String readUrl(String urlString, String username, String password) {
@@ -128,7 +131,7 @@ public class PortalWSClient {
 
 			return result.toString();
 		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
 			return null;
 		}
@@ -154,7 +157,7 @@ public class PortalWSClient {
 
 			return result.toString();
 		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
 			return null;
 		}
@@ -176,7 +179,7 @@ public class PortalWSClient {
 		try (InputStream input = new FileInputStream(CONF_DIR.concat("/pai.properties"))) {
 			prop.load(input);
 		} catch (IOException ex) {
-			logger.error("An error occurred: {}", ex.getMessage(), ex);
+			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
 
 		}
 		return prop;
@@ -199,7 +202,7 @@ public class PortalWSClient {
 
 			return dataLDAP;
 		} catch (IOException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
 		}
 		return new LoginData("Error ws nuevo");

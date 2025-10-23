@@ -3,11 +3,13 @@ package net.lacnic.portal.auth.client;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -91,7 +93,16 @@ class UtilsFilesTest {
 
 	@Test
 	void testObtenerFile_returnsNullOnIOException() {
-		assertTrue(true);
+		String originalTempDir = System.getProperty(TEMP_DIR_KEY);
+		String missingParent = tempDirectory.resolve("missing").toString();
+		System.setProperty(TEMP_DIR_KEY, missingParent);
+
+		try {
+			File resultFile = UtilsFiles.obtenerFile("data".getBytes(StandardCharsets.UTF_8), "txt");
+			assertNull(resultFile, "File creation should return null when an exception occurs");
+		} finally {
+			System.setProperty(TEMP_DIR_KEY, originalTempDir);
+		}
 	}
 
 	@Test
@@ -112,5 +123,29 @@ class UtilsFilesTest {
 		assertEquals("File is too large to process", exception.getMessage(), "Expected message for file too large");
 
 		Files.deleteIfExists(largeFile);
+	}
+
+	@Test
+	void testCalcularBytesImgQR_returnsFileBytes() throws IOException {
+		String secretKey = "secretKey123";
+		Path imagePath = tempDirectory.resolve(secretKey + ".jpg");
+		byte[] expectedBytes = "qr-bytes".getBytes(StandardCharsets.UTF_8);
+		Files.write(imagePath, expectedBytes);
+
+		byte[] result = UtilsFiles.calcularBytesImgQR(secretKey);
+
+		assertNotNull(result, "calcularBytesImgQR should return file bytes when the file exists");
+		assertArrayEquals(expectedBytes, result, "Returned bytes should match the file content");
+
+		Files.deleteIfExists(imagePath);
+	}
+
+	@Test
+	void testCalcularBytesImgQR_returnsNullWhenFileMissing() {
+		String secretKey = "missingSecret";
+
+		byte[] result = UtilsFiles.calcularBytesImgQR(secretKey);
+
+		assertNull(result, "calcularBytesImgQR should return null when the file cannot be read");
 	}
 }

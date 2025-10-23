@@ -23,6 +23,7 @@ class TokenDataTest {
 	@Test
 	void testDefaultConstructor() {
 		assertFalse(tokenData.getAuthenticated(), "Authenticated should be false by default");
+		assertFalse(tokenData.isAuthenticated(), "Authenticated should be false by default");
 		assertEquals("", tokenData.getToken(), "Token should be an empty string by default");
 		assertNotNull(tokenData.getRoles(), "Roles list should be initialized");
 		assertTrue(tokenData.getRoles().isEmpty(), "Roles list should be empty by default");
@@ -36,6 +37,7 @@ class TokenDataTest {
 		tokenData = new TokenData(errorMessage);
 
 		assertFalse(tokenData.getAuthenticated(), "Authenticated should be false");
+		assertFalse(tokenData.isAuthenticated(), "Authenticated should be false");
 		assertEquals("", tokenData.getToken(), "Token should be an empty string");
 		assertNotNull(tokenData.getRoles(), "Roles list should be initialized");
 		assertTrue(tokenData.getRoles().isEmpty(), "Roles list should be empty");
@@ -53,6 +55,7 @@ class TokenDataTest {
 		tokenData = new TokenData(roles, token, ipAllowed);
 
 		assertTrue(tokenData.getAuthenticated(), "Authenticated should be true if roles are provided");
+		assertTrue(tokenData.isAuthenticated(), "Authenticated should be true if roles are provided");
 		assertEquals(roles, tokenData.getRoles(), "Roles should match the provided list");
 		assertEquals(token, tokenData.getToken(), "Token should match the provided token");
 		assertEquals(ipAllowed, tokenData.getIpAllowed(), "IP allowed should match the provided IP");
@@ -68,6 +71,7 @@ class TokenDataTest {
 		tokenData = new TokenData(roles, token, ipAllowed);
 
 		assertFalse(tokenData.getAuthenticated(), "Authenticated should be false if roles are empty");
+		assertFalse(tokenData.isAuthenticated(), "Authenticated should be false if roles are empty");
 		assertEquals("No existen roles asociados a este token", tokenData.getError(), "Error message should indicate no roles are associated");
 	}
 
@@ -75,6 +79,7 @@ class TokenDataTest {
 	void testSetAuthenticated() {
 		tokenData.setAuthenticated(true);
 		assertTrue(tokenData.getAuthenticated(), "Authenticated should be true after setting it to true");
+		assertTrue(tokenData.isAuthenticated(), "Authenticated should be true after setting it to true");
 	}
 
 	@Test

@@ -5,6 +5,9 @@ import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +24,8 @@ public class UtilsLogin {
 			password = "{SHA256}" + hash;
 			return PortalWSClient.getLoginData(username, password);
 		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
-			return new LoginData("Error: verifique usuario y/o contraseña");
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
+            return new LoginData(ERROR_INVALID_CREDENTIALS);
 		}
 	}
 
@@ -45,9 +48,9 @@ public class UtilsLogin {
 			LoginData infoLDAP = PortalWSClient.getLoginDataTfa(username, password, totp);
 			return infoLDAP;
 		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
-			return new LoginData("Error: verifique usuario y/o contraseña");
+            return new LoginData(ERROR_INVALID_CREDENTIALS);
 		}
 	}
 

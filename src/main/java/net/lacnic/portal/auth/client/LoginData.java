@@ -14,14 +14,14 @@ public class LoginData implements Serializable {
 	private String error;
 
 	public LoginData() {
-		this("");
+        this("");
 	}
 
 	public LoginData(String error) {
 		setAuthenticated(false);
 		setRoles(new ArrayList<>());
 		setUsername("");
-		setError(error);
+        setError(error);
 	}
 
 	public LoginData(List<String> roles) {
@@ -33,7 +33,7 @@ public class LoginData implements Serializable {
 		setAuthenticated(!roles.isEmpty());
 		setRoles(roles);
 		setUsername(username);
-		setError(authenticated ? "" : "Error: verifique usuario y/o contraseña");
+        setError(authenticated ? "" : LogMessages.ERROR_INVALID_CREDENTIALS);
 	}
 
 	public boolean isAuthenticated() {

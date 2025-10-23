@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,7 @@ public class UtilsFiles {
 		try {
 			return getBytesFromFile(calcularRutaImgQR(secretKey));
 		} catch (IOException e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 			return null;
 		}
 	}
@@ -69,7 +71,7 @@ public class UtilsFiles {
 
 			return file;
 		} catch (Exception e) {
-			logger.error("An error occurred: {}", e.getMessage(), e);
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 		}
 		return null;
 	}
