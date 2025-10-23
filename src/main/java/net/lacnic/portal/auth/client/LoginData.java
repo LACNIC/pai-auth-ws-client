@@ -1,5 +1,7 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +16,14 @@ public class LoginData implements Serializable {
 	private String error;
 
 	public LoginData() {
-        this("");
+		this("");
 	}
 
 	public LoginData(String error) {
 		setAuthenticated(false);
 		setRoles(new ArrayList<>());
 		setUsername("");
-        setError(error);
+		setError(error);
 	}
 
 	public LoginData(List<String> roles) {
@@ -33,7 +35,7 @@ public class LoginData implements Serializable {
 		setAuthenticated(!roles.isEmpty());
 		setRoles(roles);
 		setUsername(username);
-        setError(authenticated ? "" : LogMessages.ERROR_INVALID_CREDENTIALS);
+		setError(authenticated ? "" : ERROR_INVALID_CREDENTIALS);
 	}
 
 	public boolean isAuthenticated() {

@@ -87,7 +87,7 @@ class UtilsLoginTest {
 	void testGetBearer_missingHeaderThrowsException() {
 		when(mockRequest.getHeader("Authorization")).thenReturn(null);
 
-		assertThrows(Exception.class, () -> UtilsLogin.getBearer(mockRequest));
+		assertThrows(IllegalArgumentException.class, () -> UtilsLogin.getBearer(mockRequest));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ class UtilsLoginTest {
 	void testGetHeaderAuthorization_missingHeaderThrowsException() {
 		when(mockRequest.getHeader("Authorization")).thenReturn("");
 
-		assertThrows(Exception.class, () -> UtilsLogin.getHeaderAuthorization(mockRequest));
+		assertThrows(IllegalArgumentException.class, () -> UtilsLogin.getHeaderAuthorization(mockRequest));
 	}
 
 	@Test

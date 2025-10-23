@@ -1,13 +1,13 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-
-import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

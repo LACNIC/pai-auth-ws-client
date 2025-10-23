@@ -1,12 +1,12 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
+
 import java.security.MessageDigest;
 import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
-
-import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
-import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,17 +25,16 @@ public class UtilsLogin {
 			return PortalWSClient.getLoginData(username, password);
 		} catch (Exception e) {
 			logger.error(ERROR_OCCURRED, e.getMessage(), e);
-            return new LoginData(ERROR_INVALID_CREDENTIALS);
+			return new LoginData(ERROR_INVALID_CREDENTIALS);
 		}
 	}
 
-	public static String getBearer(HttpServletRequest request) throws Exception {
+	public static String getBearer(HttpServletRequest request) {
 		String token = request.getHeader("Authorization");
 		if (token != null && !token.isEmpty()) {
-			token = token.trim().replaceFirst("Bearer ", "").trim();
-			return token;
+			return token.trim().replaceFirst("Bearer ", "").trim();
 		}
-		throw new Exception("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
+		throw new IllegalArgumentException("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
 	}
 
 	public static LoginData loginTfa(String username, String password, String totp) {
@@ -45,21 +44,19 @@ public class UtilsLogin {
 			byte[] bytes = md.digest();
 			String hash = new String(Base64.getEncoder().encode(bytes));
 			password = "{SHA256}" + hash;
-			LoginData infoLDAP = PortalWSClient.getLoginDataTfa(username, password, totp);
-			return infoLDAP;
+			return PortalWSClient.getLoginDataTfa(username, password, totp);
 		} catch (Exception e) {
 			logger.error(ERROR_OCCURRED, e.getMessage(), e);
-
-            return new LoginData(ERROR_INVALID_CREDENTIALS);
+			return new LoginData(ERROR_INVALID_CREDENTIALS);
 		}
 	}
 
-	public static String getHeaderAuthorization(HttpServletRequest request) throws Exception {
+	public static String getHeaderAuthorization(HttpServletRequest request) {
 		String token = request.getHeader("Authorization");
 		if (token != null && !token.isEmpty()) {
 			return token;
 		}
-		throw new Exception("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
+		throw new IllegalArgumentException("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
 	}
 
 }

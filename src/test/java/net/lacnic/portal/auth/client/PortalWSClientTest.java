@@ -75,7 +75,7 @@ class PortalWSClientTest {
 	void testGetTokenDataReturnsCachedDataWhenRefreshFails() throws Exception {
 		String token = "token-456";
 		String jsonInitial = "{\"authenticated\":true,\"token\":\"cached-token\",\"roles\":[\"ADMIN\"],\"error\":\"\",\"ipAllowed\":\"127.0.0.1\"}";
-		String jsonRefreshed = "{\"authenticated\":true,\"token\":\"fresh-token\",\"roles\":[\"ADMIN\",\"USER\"],\"error\":\"\",\"ipAllowed\":\"127.0.0.1\"}";
+		String invalidJson = "invalid";
 		Properties props = new Properties();
 		props.setProperty("PORTAL_APIKEY", "api-key");
 		props.setProperty("URL_PORTAL_WS", "https://example.com");
@@ -91,12 +91,12 @@ class PortalWSClientTest {
 			Mockito.when(entityInitial.getContent()).thenAnswer(invocation -> new ByteArrayInputStream(jsonInitial.getBytes(StandardCharsets.UTF_8)));
 			Mockito.when(responseInitial.getEntity()).thenReturn(entityInitial);
 
-			CloseableHttpResponse responseRefreshed = Mockito.mock(CloseableHttpResponse.class);
-			HttpEntity entityRefreshed = Mockito.mock(HttpEntity.class);
-			Mockito.when(entityRefreshed.getContent()).thenAnswer(invocation -> new ByteArrayInputStream(jsonRefreshed.getBytes(StandardCharsets.UTF_8)));
-			Mockito.when(responseRefreshed.getEntity()).thenReturn(entityRefreshed);
+			CloseableHttpResponse responseInvalid = Mockito.mock(CloseableHttpResponse.class);
+			HttpEntity entityInvalid = Mockito.mock(HttpEntity.class);
+			Mockito.when(entityInvalid.getContent()).thenAnswer(invocation -> new ByteArrayInputStream(invalidJson.getBytes(StandardCharsets.UTF_8)));
+			Mockito.when(responseInvalid.getEntity()).thenReturn(entityInvalid);
 
-			Mockito.when(httpClient.execute(Mockito.any(HttpGet.class))).thenReturn(responseInitial).thenReturn(responseRefreshed);
+			Mockito.when(httpClient.execute(Mockito.any(HttpGet.class))).thenReturn(responseInitial).thenReturn(responseInvalid);
 
 			TokenData initial = PortalWSClient.getTokenData(token);
 			assertTrue(initial.isAuthenticated());
@@ -110,14 +110,7 @@ class PortalWSClientTest {
 			TokenData refreshed = PortalWSClient.getTokenData(token);
 
 			assertNotNull(refreshed);
-			assertEquals("fresh-token", refreshed.getToken());
-
-			Object refreshedEntry = getCache().get(token);
-			Field tokenDataField = refreshedEntry.getClass().getDeclaredField("tokenData");
-			tokenDataField.setAccessible(true);
-			TokenData cachedTokenData = (TokenData) tokenDataField.get(refreshedEntry);
-
-			assertSame(cachedTokenData, refreshed);
+			assertSame(initial, refreshed);
 			Mockito.verify(httpClient, Mockito.times(2)).execute(Mockito.any(HttpGet.class));
 		}
 	}

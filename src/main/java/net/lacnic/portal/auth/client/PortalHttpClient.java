@@ -1,5 +1,7 @@
 package net.lacnic.portal.auth.client;
 
+import java.security.GeneralSecurityException;
+
 import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -13,10 +15,18 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 
 public class PortalHttpClient {
 
-	public static CloseableHttpClient createInsecureClient() throws Exception {
-		SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
-		DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
-		PoolingHttpClientConnectionManager connManager = PoolingHttpClientConnectionManagerBuilder.create().setTlsSocketStrategy(tlsStrategy).build();
-		return HttpClients.custom().setConnectionManager(connManager).build();
+	private PortalHttpClient() {
+		// Utility class
+	}
+
+	public static CloseableHttpClient createInsecureClient() {
+		try {
+			SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
+			DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+			PoolingHttpClientConnectionManager connManager = PoolingHttpClientConnectionManagerBuilder.create().setTlsSocketStrategy(tlsStrategy).build();
+			return HttpClients.custom().setConnectionManager(connManager).build();
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Unable to create insecure HTTP client", e);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.lacnic.portal.auth.client;
 
+import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIALS;
 import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
 
 import java.io.BufferedReader;
@@ -55,11 +56,11 @@ public class PortalWSClient {
 			cache.put(token, new CacheEntry(tokenData));
 			return tokenData;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 			if (cached != null) {
 				cached.extend();
 				cache.put(token, cached); // Reponemos el cache extendido
-				System.err.println("Error al obtener token. Usando cache extendido temporalmente.");
+				logger.warn("Error al obtener token. Usando cache extendido temporalmente.");
 				return cached.tokenData;
 			}
 		}
@@ -67,9 +68,9 @@ public class PortalWSClient {
 	}
 
 	public static void print(String printeable) {
-		System.out.println("*******************");
-		System.out.println(printeable);
-		System.out.println("*******************");
+		if (logger.isDebugEnabled()) {
+			logger.debug("*******************\n{}\n*******************", printeable);
+		}
 	}
 
 	private static class CacheEntry {
@@ -104,7 +105,7 @@ public class PortalWSClient {
 			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 
 		}
-		return new LoginData(LogMessages.ERROR_INVALID_CREDENTIALS);
+		return new LoginData(ERROR_INVALID_CREDENTIALS);
 	}
 
 	public static String readUrl(String urlString, String username, String password) {
