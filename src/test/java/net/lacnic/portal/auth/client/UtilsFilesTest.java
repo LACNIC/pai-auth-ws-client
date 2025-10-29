@@ -133,7 +133,6 @@ class UtilsFilesTest {
 		Files.write(imagePath, expectedBytes);
 
 		byte[] result = UtilsFiles.calcularBytesImgQR(secretKey);
-
 		assertNotNull(result, "calcularBytesImgQR should return file bytes when the file exists");
 		assertArrayEquals(expectedBytes, result, "Returned bytes should match the file content");
 
@@ -145,7 +144,6 @@ class UtilsFilesTest {
 		String secretKey = "missingSecret";
 
 		byte[] result = UtilsFiles.calcularBytesImgQR(secretKey);
-
-		assertNull(result, "calcularBytesImgQR should return null when the file cannot be read");
+		assertArrayEquals(new byte[0], result, "calcularBytesImgQR should return empty array when the file is missing");
 	}
 }
