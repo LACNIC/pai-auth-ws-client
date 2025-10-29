@@ -29,7 +29,7 @@ public class UtilsFiles {
 			return getBytesFromFile(calcularRutaImgQR(secretKey));
 		} catch (IOException e) {
 			logger.error(ERROR_OCCURRED, e.getMessage(), e);
-			return null;
+			return new byte[0];
 		}
 	}
 

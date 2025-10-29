@@ -27,6 +27,10 @@ public class Utils2FA {
 
 	private static final String UTF_8 = "UTF-8";
 
+	private Utils2FA() {
+		// Utility class
+	}
+
 	public static String obtenerSecretKey(String user) {
 		try {
 			String secretKey = Utils2FA.generateSecretKey();

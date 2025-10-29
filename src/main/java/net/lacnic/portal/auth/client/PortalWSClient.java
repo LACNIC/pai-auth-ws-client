@@ -37,6 +37,10 @@ public class PortalWSClient {
 	private static final String PORTAL_TOTP = "PORTAL_TOTP";
 	private static final long CACHE_DURATION_MS = TimeUnit.MINUTES.toMillis(2); // 2 minutos
 
+	private PortalWSClient() {
+		// Utility class
+	}
+
 	public static TokenData getTokenData(String token) {
 		CacheEntry cached = cache.get(token);
 		try {

@@ -15,6 +15,10 @@ public class UtilsLogin {
 
 	private static final Logger logger = LoggerFactory.getLogger(UtilsLogin.class);
 
+	private UtilsLogin() {
+		// Utility class
+	}
+
 	public static LoginData login(String username, String password) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
