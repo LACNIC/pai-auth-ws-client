@@ -1,7 +1,7 @@
 <project name="mvn-caller-pai-auth-ws-client" default="build" basedir=".">
 
 	<property name="maven.executable" value="${maven.home}/bin/mvn" />
-	<property name="jarName" value="pai-auth-ws-client-1.4.0.jar" />
+	<property name="jarName" value="pai-auth-ws-client-1.5.0.jar" />
 	
 	<target name="build" description="build" depends="copy"> </target>
 
@@ -12,9 +12,10 @@
 <!--		<copy todir="${WILDFLY10.1}${STANDALONE-MILACNIC}" file="target/${jarName}" />-->
 <!--		<copy todir="${WILDFLY20}${STANDALONE-EVRA}" file="target/${jarName}" />-->
 		<copy todir="${WILDFLY34}${STANDALONE-POLITICAS}" file="target/${jarName}" />
-		<copy todir="${WILDFLY34}${STANDALONE-VIAJES}" file="target/${jarName}" />
+<!-- 		<copy todir="${WILDFLY34}${STANDALONE-VIAJES}" file="target/${jarName}" /> -->
 
 	</target>
+	
 	
 	<target name="call-maven">
 		<exec executable="${maven.executable}">
