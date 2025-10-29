@@ -6,8 +6,6 @@ import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +31,6 @@ public class UtilsLogin {
 		}
 	}
 
-	public static String getBearer(HttpServletRequest request) {
-		String token = request.getHeader("Authorization");
-		if (token != null && !token.isEmpty()) {
-			return token.trim().replaceFirst("Bearer ", "").trim();
-		}
-		throw new IllegalArgumentException("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
-	}
-
 	public static LoginData loginTfa(String username, String password, String totp) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -53,14 +43,6 @@ public class UtilsLogin {
 			logger.error(ERROR_OCCURRED, e.getMessage(), e);
 			return new LoginData(ERROR_INVALID_CREDENTIALS);
 		}
-	}
-
-	public static String getHeaderAuthorization(HttpServletRequest request) {
-		String token = request.getHeader("Authorization");
-		if (token != null && !token.isEmpty()) {
-			return token;
-		}
-		throw new IllegalArgumentException("No cotiene el header Authorization, ejemplo Authorization: Bearer 123456789");
 	}
 
 }

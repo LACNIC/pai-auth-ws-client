@@ -4,15 +4,12 @@ import static net.lacnic.portal.auth.client.LogMessages.ERROR_INVALID_CREDENTIAL
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.security.MessageDigest;
 import java.util.Base64;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +18,8 @@ import org.mockito.Mockito;
 
 class UtilsLoginTest {
 
-	private HttpServletRequest mockRequest;
-
 	@BeforeEach
 	void setUp() {
-		mockRequest = mock(HttpServletRequest.class);
 	}
 
 	@Test
@@ -61,49 +55,8 @@ class UtilsLoginTest {
 
 			assertNotNull(result);
 			assertFalse(result.isAuthenticated());
-            assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
+			assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
 		}
-	}
-
-	@Test
-	void testGetBearer_validToken() throws Exception {
-		when(mockRequest.getHeader("Authorization")).thenReturn("Bearer validToken");
-
-		String token = UtilsLogin.getBearer(mockRequest);
-
-		assertEquals("validToken", token);
-	}
-
-	@Test
-	void testGetBearer_trimsAndExtractsToken() throws Exception {
-		when(mockRequest.getHeader("Authorization")).thenReturn("   Bearer   trimmedToken   ");
-
-		String token = UtilsLogin.getBearer(mockRequest);
-
-		assertEquals("trimmedToken", token);
-	}
-
-	@Test
-	void testGetBearer_missingHeaderThrowsException() {
-		when(mockRequest.getHeader("Authorization")).thenReturn(null);
-
-		assertThrows(IllegalArgumentException.class, () -> UtilsLogin.getBearer(mockRequest));
-	}
-
-	@Test
-	void testGetHeaderAuthorization_returnsHeader() throws Exception {
-		when(mockRequest.getHeader("Authorization")).thenReturn("Bearer someToken");
-
-		String header = UtilsLogin.getHeaderAuthorization(mockRequest);
-
-		assertEquals("Bearer someToken", header);
-	}
-
-	@Test
-	void testGetHeaderAuthorization_missingHeaderThrowsException() {
-		when(mockRequest.getHeader("Authorization")).thenReturn("");
-
-		assertThrows(IllegalArgumentException.class, () -> UtilsLogin.getHeaderAuthorization(mockRequest));
 	}
 
 	@Test
@@ -138,7 +91,7 @@ class UtilsLoginTest {
 
 			assertNotNull(result);
 			assertFalse(result.isAuthenticated());
-            assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
+			assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
 		}
 	}
 
@@ -154,7 +107,7 @@ class UtilsLoginTest {
 
 			assertNotNull(result);
 			assertFalse(result.isAuthenticated());
-            assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
+			assertEquals(ERROR_INVALID_CREDENTIALS, result.getError());
 		}
 	}
 }
