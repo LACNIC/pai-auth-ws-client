@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mockStatic;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -38,6 +39,14 @@ class Utils2FATest {
 		String secretKey = Utils2FA.generateSecretKey();
 		assertNotNull(secretKey);
 		assertTrue(secretKey.length() > 0);
+	}
+
+	@Test
+	void testGenerateSecretKey_returnsBase32EncodedTwentyByteSecret() {
+		String secretKey = Utils2FA.generateSecretKey();
+		byte[] decodedSecret = new Base32().decode(secretKey);
+
+		assertEquals(20, decodedSecret.length);
 	}
 
 	@Test
@@ -77,6 +86,13 @@ class Utils2FATest {
 	}
 
 	@Test
+	void testGetGoogleAuthenticatorBarCode_encodesSpecialCharacters() {
+		String url = Utils2FA.getGoogleAuthenticatorBarCode("ABC DEF", "user@example.com", "LACNIC (PAI)");
+
+		assertEquals("otpauth://totp/LACNIC%20%28PAI%29%3Auser%40example.com?secret=ABC%20DEF&issuer=LACNIC%20%28PAI%29", url);
+	}
+
+	@Test
 	void testCreateQRCode_createsQRCode() throws IOException, WriterException {
 		String barCodeData = "mockBarcodeData";
 		String filePath = "/tmp/mockQRCode.png";
@@ -90,6 +106,21 @@ class Utils2FATest {
 
 			// Verify that the method was called with the correct parameters
 			mockedMatrixWriter.verify(() -> MatrixToImageWriter.writeToPath(any(), eq("png"), eq(expectedPath)));
+		}
+	}
+
+	@Test
+	void testCreateQRCode_writesPngFile() throws IOException, WriterException {
+		Path qrFile = Files.createTempFile("qr-code", ".png");
+		Files.delete(qrFile);
+
+		try {
+			Utils2FA.createQRCode("otpauth://totp/test?secret=ABC&issuer=LACNIC", qrFile.toString(), 100, 100);
+
+			assertTrue(Files.exists(qrFile));
+			assertTrue(Files.size(qrFile) > 0);
+		} finally {
+			Files.deleteIfExists(qrFile);
 		}
 	}
 

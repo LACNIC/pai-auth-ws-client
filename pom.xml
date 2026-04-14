@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.LACNIC</groupId>
 	<artifactId>pai-auth-ws-client</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.1</version>
 	<name>PAI Authentication Client</name>
 	<description>Client for handling authentication requests and managing access
 		to the PAI services.</description>
@@ -14,6 +14,7 @@
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<jackson.version>2.18.6</jackson.version>
 		<junit.jupiter.version>5.8.1</junit.jupiter.version>
 		<mockito.version>4.11.0</mockito.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,13 +37,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.15.0</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.15.0</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
