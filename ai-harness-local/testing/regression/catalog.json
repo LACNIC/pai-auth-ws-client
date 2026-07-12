@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0.0",
+  "application": {
+    "name": "pai-auth-ws-client",
+    "key": "PAI_AUTH_WS_CLIENT"
+  },
+  "ghostInspector": {
+    "organizationId": "",
+    "folderId": "",
+    "folderName": "IA_PAI_AUTH_WS_CLIENT"
+  },
+  "vocabularies": {
+    "categories": [
+      "smoke",
+      "functional",
+      "regression",
+      "integration",
+      "permissions",
+      "validation",
+      "error-handling",
+      "visual",
+      "accessibility"
+    ],
+    "modules": [],
+    "criticalities": [
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]
+  },
+  "suites": [],
+  "cases": []
+}
