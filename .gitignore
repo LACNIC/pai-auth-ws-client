@@ -95,6 +95,9 @@ ai-harness-local/testing/.env
 ai-harness-local/testing/.auth/
 ai-harness-local/testing/runs/
 ai-harness-local/testing/sessions/
+ai-harness-local/testing/runtime/
+ai-harness-local/testing/baseline/receipts/
+ai-harness-local/runtime/java.env
 
 # AI harness operational artifacts
 ai-harness-local/backlog/
