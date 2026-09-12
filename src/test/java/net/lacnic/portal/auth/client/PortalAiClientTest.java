@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
@@ -12,6 +13,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -28,9 +30,9 @@ class PortalAiClientTest {
 		return props;
 	}
 
-	private CloseableHttpClient mockHttp(MockedStatic<PortalHttpClient> httpMock, int status, String json) throws Exception {
+	private CloseableHttpClient mockHttp(MockedStatic<HttpClients> httpMock, int status, String json) throws Exception {
 		CloseableHttpClient httpClient = Mockito.mock(CloseableHttpClient.class);
-		httpMock.when(PortalHttpClient::createInsecureClient).thenReturn(httpClient);
+		httpMock.when(HttpClients::createDefault).thenReturn(httpClient);
 		CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
 		Mockito.when(response.getEntity()).thenReturn(new StringEntity(json, ContentType.APPLICATION_JSON));
 		Mockito.when(response.getCode()).thenReturn(status);
@@ -41,7 +43,7 @@ class PortalAiClientTest {
 	@Test
 	void resolveSendsBearerAndParsesCatalogBinding() throws Exception {
 		String json = "{\"use\":\"DEFAULT\",\"provider\":\"OPENAI\",\"modelId\":\"gpt-5.5\",\"modelLabel\":\"GPT-5.5\",\"enabled\":true,\"timeoutSeconds\":60,\"credentialName\":\"OpenAI DEFAULT placeholder\"}";
-		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<PortalHttpClient> httpMock = Mockito.mockStatic(PortalHttpClient.class)) {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
 			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
 			CloseableHttpClient httpClient = mockHttp(httpMock, 200, json);
 
@@ -58,12 +60,30 @@ class PortalAiClientTest {
 			Mockito.verify(httpClient).execute(captor.capture());
 			assertEquals("https://example.com/portal-ws/ai/resolve/DEFAULT", captor.getValue().getUri().toString());
 			assertEquals("Bearer raw-token", captor.getValue().getFirstHeader("Authorization").getValue());
+			assertEquals(5, captor.getValue().getConfig().getConnectTimeout().toSeconds());
+			assertEquals(90, captor.getValue().getConfig().getResponseTimeout().toSeconds());
+			httpMock.verify(HttpClients::createDefault);
+		}
+	}
+
+	@Test
+	void resolveEncodesUseAsSinglePathSegment() throws Exception {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
+			CloseableHttpClient httpClient = mockHttp(httpMock, 200, "{}");
+
+			AiResolveData result = PortalAiClient.resolve("tok", " reports/a?b#c ");
+
+			assertTrue(result.isSuccess());
+			ArgumentCaptor<HttpGet> captor = ArgumentCaptor.forClass(HttpGet.class);
+			Mockito.verify(httpClient).execute(captor.capture());
+			assertEquals("https://example.com/portal-ws/ai/resolve/reports%2Fa%3Fb%23c", captor.getValue().getUri().toASCIIString());
 		}
 	}
 
 	@Test
 	void resolveMapsGatewayErrorBody() throws Exception {
-		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<PortalHttpClient> httpMock = Mockito.mockStatic(PortalHttpClient.class)) {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
 			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
 			mockHttp(httpMock, 403, "{\"error\":\"forbidden\"}");
 
@@ -78,7 +98,7 @@ class PortalAiClientTest {
 	@Test
 	void chatPostsMessagesAndParsesText() throws Exception {
 		String json = "{\"text\":\"hola\",\"use\":\"MiLACNIC_Query\",\"provider\":\"OPENAI\",\"modelId\":\"gpt-4o\",\"latencyMs\":12}";
-		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<PortalHttpClient> httpMock = Mockito.mockStatic(PortalHttpClient.class)) {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
 			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws/"));
 			CloseableHttpClient httpClient = mockHttp(httpMock, 200, json);
 
@@ -102,6 +122,22 @@ class PortalAiClientTest {
 	}
 
 	@Test
+	void chatMapsSocketTimeout() throws Exception {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
+			CloseableHttpClient httpClient = Mockito.mock(CloseableHttpClient.class);
+			httpMock.when(HttpClients::createDefault).thenReturn(httpClient);
+			Mockito.when(httpClient.execute(Mockito.any())).thenThrow(new SocketTimeoutException("timed out"));
+
+			AiChatData result = PortalAiClient.chat("tok", "DEFAULT", "hola");
+
+			assertFalse(result.isSuccess());
+			assertEquals(504, result.getHttpStatus());
+			assertEquals("gateway_timeout", result.getError());
+		}
+	}
+
+	@Test
 	void chatRejectsBlankUseWithoutHttp() {
 		AiChatData result = PortalAiClient.chat("tok", "  ", "hola");
 		assertFalse(result.isSuccess());
@@ -112,7 +148,7 @@ class PortalAiClientTest {
 	@Test
 	void portalWsClientDelegatesToAiClient() throws Exception {
 		String json = "{\"text\":\"ok\",\"use\":\"DEFAULT\",\"provider\":\"OPENAI\",\"modelId\":\"gpt-5.5\",\"latencyMs\":1}";
-		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<PortalHttpClient> httpMock = Mockito.mockStatic(PortalHttpClient.class)) {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
 			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
 			mockHttp(httpMock, 200, json);
 			AiChatData result = PortalWSClient.chatAi("tok", "DEFAULT", "hola");

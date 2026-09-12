@@ -2,7 +2,7 @@
 
 Estado: idle
 Modo:
-Actualizado: 2026-09-08T01:18:59Z
+Actualizado: 2026-09-12T23:21:37Z
 
 ## Tarea
 
@@ -13,10 +13,10 @@ Actualizado: 2026-09-08T01:18:59Z
 
 ## Ultimo cierre
 
-- Id: doctor-pai-auth-ws-client
-- Nombre: Corregir hallazgos del doctor en pai-auth-ws-client
-- Cerrado: 2026-09-08T01:18:59Z
-- Rama: codex/doctor-pai-auth-ws-client
+- Id: secure-ai-client
+- Nombre: Asegurar las llamadas del cliente del gateway de IA
+- Cerrado: 2026-09-12T23:21:37Z
+- Rama: codex/secure-ai-client
 
 ## Checkpoint
 

@@ -3,6 +3,7 @@ package net.lacnic.portal.auth.client;
 import static net.lacnic.portal.auth.client.LogMessages.ERROR_OCCURRED;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,11 +14,15 @@ import java.util.Properties;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,11 @@ public final class PortalAiClient {
 	private static final String URL_PORTAL_WS = "URL_PORTAL_WS";
 	private static final String DEFAULT_PORTAL_WS = "https://pai-test.dev.lacnic.net/portal-ws";
 	private static final String CLIENT_ERROR = "Error en el cliente Java de gateway IA";
+	private static final String GATEWAY_TIMEOUT = "gateway_timeout";
+	private static final RequestConfig REQUEST_CONFIG = RequestConfig.custom()
+			.setConnectTimeout(Timeout.ofSeconds(5))
+			.setResponseTimeout(Timeout.ofSeconds(90))
+			.build();
 
 	private PortalAiClient() {
 	}
@@ -41,7 +51,8 @@ public final class PortalAiClient {
 			return failureResolve("invalid_use", 400);
 		}
 		try {
-			HttpResponseBody response = execute(new HttpGet(baseUrl() + "/ai/resolve/" + use.trim()), token, null);
+			HttpGet request = new HttpGet(new URIBuilder(baseUrl()).appendPathSegments("ai", "resolve", use.trim()).build());
+			HttpResponseBody response = execute(request, token, null);
 			if (response.status >= 200 && response.status < 300) {
 				AiResolveData data = mapper().readValue(response.body, AiResolveData.class);
 				data.setSuccess(true);
@@ -50,6 +61,9 @@ public final class PortalAiClient {
 				return data;
 			}
 			return failureResolve(readError(response.body), response.status);
+		} catch (SocketTimeoutException ex) {
+			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
+			return failureResolve(GATEWAY_TIMEOUT, 504);
 		} catch (Exception ex) {
 			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
 			return new AiResolveData(CLIENT_ERROR);
@@ -82,6 +96,9 @@ public final class PortalAiClient {
 				return data;
 			}
 			return failureChat(readError(response.body), response.status);
+		} catch (SocketTimeoutException ex) {
+			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
+			return failureChat(GATEWAY_TIMEOUT, 504);
 		} catch (Exception ex) {
 			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
 			return new AiChatData(CLIENT_ERROR);
@@ -89,12 +106,13 @@ public final class PortalAiClient {
 	}
 
 	private static HttpResponseBody execute(HttpUriRequestBase request, String token, String jsonBody) throws Exception {
+		request.setConfig(REQUEST_CONFIG);
 		request.setHeader(AUTHORIZATION, bearer(token));
 		request.setHeader("Accept", "application/json");
 		if (jsonBody != null) {
 			request.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
 		}
-		try (CloseableHttpClient client = PortalHttpClient.createInsecureClient(); CloseableHttpResponse response = client.execute(request)) {
+		try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(request)) {
 			String body = response.getEntity() == null ? "" : EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 			return new HttpResponseBody(response.getCode(), body);
 		}

@@ -18,3 +18,11 @@ Este archivo es append-only. Agrega una entrada al cerrar cada sesion de trabajo
 - No se modificaron POM, código, Docker ni producto.
 - Doctor puntual final: `ready`, 100%, cero hallazgos. `verify-changes.sh`,
   validación Zoho, plantillas canónicas y `git diff --check`: OK.
+
+<!-- ai-harness:history:secure-ai-client:2026-09-12T23:21:37Z -->
+## 2026-09-12 - secure-ai-client
+
+- Tarea: Asegurar las llamadas del cliente del gateway de IA
+- Modo: light
+- Estado: done
+- Rama: codex/secure-ai-client
