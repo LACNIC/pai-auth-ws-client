@@ -196,6 +196,18 @@ public class PortalWSClient {
 		return objectMapper;
 	}
 
+	public static AiResolveData resolveAi(String token, String use) {
+		return PortalAiClient.resolve(token, use);
+	}
+
+	public static AiChatData chatAi(String token, String use, String userMessage) {
+		return PortalAiClient.chat(token, use, userMessage);
+	}
+
+	public static AiChatData chatAi(String token, String use, java.util.List<AiChatMessage> messages) {
+		return PortalAiClient.chat(token, use, messages);
+	}
+
 	public static LoginData getLoginDataTfa(String username, String password, String totp) {
 		try {
 			String jsonData = readUrl((getURLWS() + "/login-tfa"), username, password, totp);

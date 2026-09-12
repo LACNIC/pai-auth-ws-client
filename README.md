@@ -7,6 +7,7 @@
 
 - Conexión sencilla al servicio web de autenticación de PAI.
 - Métodos para realizar autenticaciones y gestionar sesiones.
+- Cliente del gateway IA de PAI: `GET /ai/resolve/{use}` y `POST /ai/chat`.
 - Configurable y fácil de integrar en aplicaciones Java.
 
 ## Requisitos
@@ -33,7 +34,7 @@ Luego, agrega la dependencia del cliente PAI:
 <dependency>
   <groupId>com.github.LACNIC</groupId>
   <artifactId>pai-auth-ws-client</artifactId>
-  <version>1.0.0</version> <!-- Reemplaza con la versión publicada en JitPack -->
+  <version>1.6.0</version>
 </dependency>
 ```
 
@@ -43,6 +44,20 @@ Luego, agrega la dependencia del cliente PAI:
 <dependency>
   <groupId>com.github.LACNIC</groupId>
   <artifactId>pai-auth-ws-client</artifactId>
-  <version>1.0.0</version> <!-- Reemplaza con la versión publicada en JitPack -->
+  <version>1.6.0</version>
 </dependency>
 ```
+
+## Gateway IA
+
+Usa `URL_PORTAL_WS` de `pai.properties` y un Bearer PAI con rol `portal-ai-gateway`. La IP del caller debe estar en `AI_LLM_WS_IP_WHITELIST`.
+
+```java
+AiResolveData resolved = PortalAiClient.resolve(token, use);
+AiChatData chat = PortalAiClient.chat(token, use, "resumí este texto");
+AiChatData withRoles = PortalAiClient.chat(token, use,
+    List.of(AiChatMessage.system("sos un asistente"), AiChatMessage.user("hola")));
+```
+
+También: `PortalWSClient.resolveAi(...)` y `PortalWSClient.chatAi(...)`.
+El `use` lo define la aplicación que llama; el cliente solo lo reenvía al gateway.
