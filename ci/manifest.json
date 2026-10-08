@@ -1,9 +1,9 @@
 {
-  "bundleVersion": "649539f28ddf331f51b8803b7ca5045a0f0a4fe00f6893c34f717d1dbad37791",
+  "bundleVersion": "d264e7a56c34e3280c1b58d9aa8913b50b5947bb299a30b9a0cf86f3b14c127f",
   "collections": {},
   "files": {
     "README.md": "845d98200596fdceac4388015da17de459720ece0a67646c657ddbb86ff7a5ff",
-    "deploy/deploy.py": "35e9209c77ceedc536886841738e7f93d349556aa5627fc367f4fe38956d5197",
+    "deploy/deploy.py": "4e26ddd4d3d83e387b3b026ca07c2dc24842ce832b54c962e0fcfb7f6e657d2c",
     "deploy/docker-jenkins-harness.sh": "333663e832a77a59d4da7634bce656a7b324994a14871b510c5dcb7223e8d3a8",
     "kuma/kuma_client.py": "b74cb56c082defbb4c9d4254015d7d971f649f7e072ba746ad4d8bd9d6e04e3b",
     "newman/ci_collection.py": "46f217d075b83c87c7cd2261e32d19ee371575c5b22a1ca0947e97ad8eb753da",
