@@ -13,7 +13,7 @@ FILES = {
     "README.md", "verify.py", "deploy/docker-jenkins-harness.sh", "deploy/deploy.py",
     "kuma/kuma_client.py", "newman/ci_collection.py", "newman/http_evidence.py",
     "newman/postman_internal.py", "newman/postman_remote.py",
-    "newman/postman_vault.py", "newman/publication_contract.py",
+    "newman/postman_vault.py", "newman/publication_contract.py", "newman/readiness.py",
     "newman/state_root.py", "newman/ws-ci", "newman/run-ci-tests.sh",
 }
 EXCLUDED = {".git", "ai-harness", "ai-harness-local", "target", "node_modules", "ci"}

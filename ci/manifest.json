@@ -1,5 +1,5 @@
 {
-  "bundleVersion": "75c1e7c1c7ba2bca134593d0f42c9375e5d562ab4117b7f177032b28a5a35bfe",
+  "bundleVersion": "5f0ee1fea61e364e68fbf8c953b5a9f623bc10380358912bd66011a095d52d15",
   "collections": {},
   "files": {
     "README.md": "97ebde314314f2e8af8498d4b096dc6c88745d1b5741c4075330d7117ab73dc7",
@@ -12,10 +12,11 @@
     "newman/postman_remote.py": "48a9973ae7a181971dc9fe9203da8fa2e3103a85f181bd761c9579ea85c33b68",
     "newman/postman_vault.py": "68c44d3907f4eb12f9239faaef3dab79a64c441f57d5eb6e9dda9dd82600a8c5",
     "newman/publication_contract.py": "c06c33bb4040b91a2e68560a5c40c3348db610b75366ed4fb423a5227dc2f9e7",
+    "newman/readiness.py": "09dd1cc8bad6b4f613a06dab245537140006795388c01b8f56047d6a28184f83",
     "newman/run-ci-tests.sh": "ad4eafe896c49f28fe070d147001c07e9bfccd833d01f6c25e75a3a3b0eedcc3",
     "newman/state_root.py": "4f81e5a8e598b0254a224f59b5d6605bd1cb720175729f80ef2e522e53cec9b6",
-    "newman/ws-ci": "d3199dd426a53f9a792d23f0649be5b7ee15f8ac666735473b3663e5829fffe5",
-    "verify.py": "fc7a1b0d678d551203ea2ba5c48d291e84e97d9c0b014d2cda345292402d9591"
+    "newman/ws-ci": "52c77fe67870851714a6b8ecb3bc1299ba9d43830454bb7e7841b64264f55138",
+    "verify.py": "a3f24fd854d81c1aeebca3e2271ed8895d5bb03f1ca2b45fe81baf5a92e1d9df"
   },
   "schemaVersion": 1
 }

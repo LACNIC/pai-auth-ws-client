@@ -22,6 +22,7 @@ from postman_vault import materialize
 from publication_contract import default_tests_enabled
 from state_root import resolve_state_root
 from ci_collection import _same_http_endpoint, junit_counts, suite_collection
+from readiness import wait_for_readiness
 
 
 SUITES = ("smoke", "contract", "access")
@@ -121,6 +122,8 @@ def main() -> int:
     parser.add_argument("--suite", action="append", choices=SUITES,
                         help="repeat to select suites; default: smoke, contract, access")
     parser.add_argument("--newman-bin", default=os.environ.get("NEWMAN_BIN", "newman"))
+    parser.add_argument("--expected-version", default=os.environ.get("NEWMAN_EXPECTED_VERSION"),
+                        help="optional deployedVersion expected from /status/items")
     parser.add_argument("--output-dir", type=Path,
                         help="JUnit and summary directory; default: target/ws-tests")
     args = parser.parse_args()
@@ -177,9 +180,18 @@ def main() -> int:
         environment.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
         child_env = os.environ.copy()
         child_env.pop("POSTMAN_VAULT_KEY", None)
+        selected_suites = []
         for suite in suites:
             selected, items, excluded = selected_collection(collection, suite, args.role)
             check_target(project, target_url, args.role, payload, items)
+            selected_suites.append((suite, selected, items, excluded))
+        if args.role == "testing":
+            values = environment_values(payload)
+            elapsed, version = wait_for_readiness(
+                target_url, values.get("monitor_token", ""), args.expected_version)
+            summary["readiness"] = {"status": "PASSED", "durationSeconds": elapsed,
+                                    "deployedVersion": version}
+        for suite, selected, items, excluded in selected_suites:
             selected_path = run_dir / f"{suite}.collection.json"
             selected_path.write_text(json.dumps(selected, ensure_ascii=False) + "\n", encoding="utf-8")
             junit_path = run_dir / f"{suite}.xml"
