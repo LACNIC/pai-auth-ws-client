@@ -7,7 +7,7 @@
 
 - Conexión sencilla al servicio web de autenticación de PAI.
 - Métodos para realizar autenticaciones y gestionar sesiones.
-- Cliente del gateway IA de PAI: `GET /ai/resolve/{use}` y `POST /ai/chat`.
+- Cliente del gateway IA de PAI: `GET /ai/resolve/{use}`, `POST /ai/chat` y `POST /ai/relevance`.
 - Configurable y fácil de integrar en aplicaciones Java.
 
 ## Requisitos
@@ -34,7 +34,7 @@ Luego, agrega la dependencia del cliente PAI:
 <dependency>
   <groupId>com.github.LACNIC</groupId>
   <artifactId>pai-auth-ws-client</artifactId>
-  <version>1.6.0</version>
+  <version>1.7.0</version>
 </dependency>
 ```
 
@@ -44,7 +44,7 @@ Luego, agrega la dependencia del cliente PAI:
 <dependency>
   <groupId>com.github.LACNIC</groupId>
   <artifactId>pai-auth-ws-client</artifactId>
-  <version>1.6.0</version>
+  <version>1.7.0</version>
 </dependency>
 ```
 
@@ -61,3 +61,23 @@ AiChatData withRoles = PortalAiClient.chat(token, use,
 
 También: `PortalWSClient.resolveAi(...)` y `PortalWSClient.chatAi(...)`.
 El `use` lo define la aplicación que llama; el cliente solo lo reenvía al gateway.
+
+### Relevancia de fichas
+
+Enviá una consulta y todas las fichas en un solo pedido. PAI las divide en lotes internamente y responde con un puntaje entre 0 y 1 por cada ID, en el orden recibido. El pedido devuelve todos los resultados o un error.
+
+```java
+List<AiRelevanceSource> sources = List.of(
+    new AiRelevanceSource("wp:1", "Evento IPv6", "Programa del evento sobre IPv6."),
+    new AiRelevanceSource("wp:2", "Evento DNS", "Programa del evento sobre DNS."));
+AiRelevanceData result = PortalAiClient.relevance(token, "¿Qué eventos tratan sobre IPv6?", sources);
+if (result.isSuccess()) {
+    for (AiRelevanceResult source : result.getResults()) {
+        System.out.println(source.getId() + ": " + source.getRelevance());
+    }
+} else {
+    System.out.println(result.getError() + " (HTTP " + result.getHttpStatus() + ")");
+}
+```
+
+También: `PortalWSClient.relevanceAi(token, query, sources)`. Los errores incluyen `retryable` y, cuando una ficha concreta es inválida, `sourceId`. El cliente usa un tiempo de espera de lectura de 150 segundos para esta operación; `chatAi` conserva sus 90 segundos.

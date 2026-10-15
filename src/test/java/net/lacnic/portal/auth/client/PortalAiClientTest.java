@@ -2,6 +2,7 @@ package net.lacnic.portal.auth.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.SocketTimeoutException;
@@ -154,6 +155,92 @@ class PortalAiClientTest {
 			AiChatData result = PortalWSClient.chatAi("tok", "DEFAULT", "hola");
 			assertTrue(result.isSuccess());
 			assertEquals("ok", result.getText());
+		}
+	}
+
+	@Test
+	void relevancePostsAllSourcesAndParsesConsolidatedResults() throws Exception {
+		String json = "{\"useEffective\":\"DEFAULT_JEV\",\"model\":\"typesafe/jev-1.14\",\"batchCount\":2,\"results\":[{\"id\":\"wp:1\",\"relevance\":0.91},{\"id\":\"wp:2\",\"relevance\":0.08}],\"usage\":{\"inputTokens\":100,\"outputTokens\":10},\"latencyMs\":150}";
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws/"));
+			CloseableHttpClient httpClient = mockHttp(httpMock, 200, json);
+			List<AiRelevanceSource> sources = List.of(new AiRelevanceSource("wp:1", "IPv6", "Primer evento"), new AiRelevanceSource("wp:2", "DNS", "Segundo evento"));
+
+			AiRelevanceData result = PortalWSClient.relevanceAi("tok", "¿IPv6?", sources);
+
+			assertTrue(result.isSuccess());
+			assertEquals(200, result.getHttpStatus());
+			assertEquals("DEFAULT_JEV", result.getUseEffective());
+			assertEquals("typesafe/jev-1.14", result.getModel());
+			assertEquals(2, result.getBatchCount());
+			assertEquals("wp:1", result.getResults().get(0).getId());
+			assertEquals(0.91, result.getResults().get(0).getRelevance());
+			assertEquals("wp:2", result.getResults().get(1).getId());
+			assertEquals(0.08, result.getResults().get(1).getRelevance());
+			assertNotNull(result.getUsage());
+			assertEquals(100, result.getUsage().getInputTokens());
+			assertEquals(10, result.getUsage().getOutputTokens());
+			assertEquals(150L, result.getLatencyMs());
+
+			ArgumentCaptor<HttpPost> captor = ArgumentCaptor.forClass(HttpPost.class);
+			Mockito.verify(httpClient).execute(captor.capture());
+			HttpPost request = captor.getValue();
+			assertEquals("https://example.com/portal-ws/ai/relevance", request.getUri().toString());
+			assertEquals("Bearer tok", request.getFirstHeader("Authorization").getValue());
+			assertEquals(150, request.getConfig().getResponseTimeout().toSeconds());
+			String body = EntityUtils.toString(request.getEntity(), StandardCharsets.UTF_8);
+			assertTrue(body.contains("\"query\":\"¿IPv6?\""));
+			assertTrue(body.contains("\"id\":\"wp:1\""));
+			assertTrue(body.contains("\"id\":\"wp:2\""));
+			assertTrue(body.contains("\"content\":\"Segundo evento\""));
+		}
+	}
+
+	@Test
+	void relevancePreservesGatewayErrorDetails() throws Exception {
+		String json = "{\"error\":\"bad_request\",\"retryable\":false,\"sourceId\":\"wp:2\"}";
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
+			mockHttp(httpMock, 400, json);
+
+			AiRelevanceData result = PortalAiClient.relevance("tok", "q", List.of(new AiRelevanceSource("wp:2", "title", "content")));
+
+			assertFalse(result.isSuccess());
+			assertEquals(400, result.getHttpStatus());
+			assertEquals("bad_request", result.getError());
+			assertEquals("wp:2", result.getSourceId());
+			assertFalse(result.isRetryable());
+		}
+	}
+
+	@Test
+	void relevancePreservesRetryableProviderError() throws Exception {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
+			mockHttp(httpMock, 429, "{\"error\":\"provider_rate_limited\",\"retryable\":true}");
+
+			AiRelevanceData result = PortalAiClient.relevance("tok", "q", List.of(new AiRelevanceSource("wp:1", "title", "content")));
+
+			assertFalse(result.isSuccess());
+			assertEquals(429, result.getHttpStatus());
+			assertEquals("provider_rate_limited", result.getError());
+			assertTrue(result.isRetryable());
+		}
+	}
+
+	@Test
+	void relevanceMapsSocketTimeout() throws Exception {
+		try (MockedStatic<PortalWSClient> wsMock = Mockito.mockStatic(PortalWSClient.class, Mockito.CALLS_REAL_METHODS); MockedStatic<HttpClients> httpMock = Mockito.mockStatic(HttpClients.class)) {
+			wsMock.when(PortalWSClient::getPaiProperties).thenReturn(portalProperties("https://example.com/portal-ws"));
+			CloseableHttpClient httpClient = Mockito.mock(CloseableHttpClient.class);
+			httpMock.when(HttpClients::createDefault).thenReturn(httpClient);
+			Mockito.when(httpClient.execute(Mockito.any())).thenThrow(new SocketTimeoutException("timed out"));
+
+			AiRelevanceData result = PortalAiClient.relevance("tok", "q", List.of(new AiRelevanceSource("wp:1", "title", "content")));
+
+			assertFalse(result.isSuccess());
+			assertEquals(504, result.getHttpStatus());
+			assertEquals("gateway_timeout", result.getError());
 		}
 	}
 }

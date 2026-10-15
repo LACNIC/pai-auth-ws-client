@@ -20,15 +20,6 @@
       "implementation_mode": "light",
       "zoho_sync": false,
       "type": "security-fix"
-    },
-    {
-      "id": "ai-relevance-client-1-7-0",
-      "name": "Consumir relevancia de fichas de PAI desde el cliente Java",
-      "description": "Agregar POST /ai/relevance con DTOs tipados, pruebas del contrato HTTP y publicar la versión 1.7.0 para Conecta.",
-      "status": "pending",
-      "implementation_mode": "light",
-      "zoho_sync": false,
-      "type": "feature"
     }
   ]
 }

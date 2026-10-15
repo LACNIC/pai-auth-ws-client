@@ -208,6 +208,10 @@ public class PortalWSClient {
 		return PortalAiClient.chat(token, use, messages);
 	}
 
+	public static AiRelevanceData relevanceAi(String token, String query, java.util.List<AiRelevanceSource> sources) {
+		return PortalAiClient.relevance(token, query, sources);
+	}
+
 	public static LoginData getLoginDataTfa(String username, String password, String totp) {
 		try {
 			String jsonData = readUrl((getURLWS() + "/login-tfa"), username, password, totp);

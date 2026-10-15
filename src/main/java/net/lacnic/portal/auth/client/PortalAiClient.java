@@ -38,9 +38,14 @@ public final class PortalAiClient {
 	private static final String DEFAULT_PORTAL_WS = "https://pai-test.dev.lacnic.net/portal-ws";
 	private static final String CLIENT_ERROR = "Error en el cliente Java de gateway IA";
 	private static final String GATEWAY_TIMEOUT = "gateway_timeout";
+	private static final int RELEVANCE_RESPONSE_TIMEOUT_SECONDS = 150;
 	private static final RequestConfig REQUEST_CONFIG = RequestConfig.custom()
 			.setConnectTimeout(Timeout.ofSeconds(5))
 			.setResponseTimeout(Timeout.ofSeconds(90))
+			.build();
+	private static final RequestConfig RELEVANCE_REQUEST_CONFIG = RequestConfig.custom()
+			.setConnectTimeout(Timeout.ofSeconds(5))
+			.setResponseTimeout(Timeout.ofSeconds(RELEVANCE_RESPONSE_TIMEOUT_SECONDS))
 			.build();
 
 	private PortalAiClient() {
@@ -105,8 +110,36 @@ public final class PortalAiClient {
 		}
 	}
 
+	public static AiRelevanceData relevance(String token, String query, List<AiRelevanceSource> sources) {
+		try {
+			Map<String, Object> body = new LinkedHashMap<>();
+			body.put("query", query);
+			body.put("sources", sources);
+			HttpPost request = new HttpPost(baseUrl() + "/ai/relevance");
+			HttpResponseBody response = execute(request, token, mapper().writeValueAsString(body), RELEVANCE_REQUEST_CONFIG);
+			if (response.status >= 200 && response.status < 300) {
+				AiRelevanceData data = mapper().readValue(response.body, AiRelevanceData.class);
+				data.setSuccess(true);
+				data.setHttpStatus(response.status);
+				data.setError("");
+				return data;
+			}
+			return failureRelevance(response.body, response.status);
+		} catch (SocketTimeoutException ex) {
+			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
+			return failureRelevance(GATEWAY_TIMEOUT, 504);
+		} catch (Exception ex) {
+			logger.error(ERROR_OCCURRED, ex.getMessage(), ex);
+			return new AiRelevanceData(CLIENT_ERROR);
+		}
+	}
+
 	private static HttpResponseBody execute(HttpUriRequestBase request, String token, String jsonBody) throws Exception {
-		request.setConfig(REQUEST_CONFIG);
+		return execute(request, token, jsonBody, REQUEST_CONFIG);
+	}
+
+	private static HttpResponseBody execute(HttpUriRequestBase request, String token, String jsonBody, RequestConfig config) throws Exception {
+		request.setConfig(config);
 		request.setHeader(AUTHORIZATION, bearer(token));
 		request.setHeader("Accept", "application/json");
 		if (jsonBody != null) {
@@ -154,6 +187,21 @@ public final class PortalAiClient {
 
 	private static AiChatData failureChat(String error, int status) {
 		AiChatData data = new AiChatData(error);
+		data.setHttpStatus(status);
+		return data;
+	}
+
+	private static AiRelevanceData failureRelevance(String body, int status) {
+		AiRelevanceData data;
+		try {
+			data = mapper().readValue(body, AiRelevanceData.class);
+		} catch (Exception ignored) {
+			data = new AiRelevanceData(readError(body));
+		}
+		if (data.getError() == null || data.getError().isBlank()) {
+			data.setError("service_unavailable");
+		}
+		data.setSuccess(false);
 		data.setHttpStatus(status);
 		return data;
 	}
