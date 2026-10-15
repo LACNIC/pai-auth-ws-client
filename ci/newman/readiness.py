@@ -73,6 +73,8 @@ def probe_status(url: str, token: str, timeout: float,
     version = service.get("deployedVersion")
     if not isinstance(version, str) or not version.strip():
         return False, "service deployedVersion is missing", None
+    if version == "UNKNOWN":
+        return False, "service deployedVersion is UNKNOWN", None
     if expected_version is not None and version != expected_version:
         return False, "service deployedVersion differs from expected version", None
     return True, "ready", version
