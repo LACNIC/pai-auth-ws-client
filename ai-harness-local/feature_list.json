@@ -11,5 +11,15 @@
       "blocked"
     ]
   },
-  "features": []
+  "features": [
+    {
+      "id": "redact-token-debug-log",
+      "name": "Evitar exposición de Bearer en log DEBUG del cliente PAI",
+      "description": "Eliminar del DEBUG de PortalWSClient.getTokenData el TokenData completo y verificar con un token sintético que no se imprima.",
+      "status": "pending",
+      "implementation_mode": "light",
+      "zoho_sync": false,
+      "type": "security-fix"
+    }
+  ]
 }
