@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "layers": {
+    "ws-client": {
+      "write_patterns": [
+        "src/main/java/net/lacnic/portal/auth/client/*.java"
+      ],
+      "skills": [
+        "ai-harness/skills/java-layered-change/SKILL.md"
+      ],
+      "local_rules": []
+    }
+  }
+}
